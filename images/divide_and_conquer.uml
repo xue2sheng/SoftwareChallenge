@@ -1,0 +1,14 @@
+@startuml
+
+[*] --> Preprocess : human-friendly\ninput
+Preprocess : process human-friendly input 
+Preprocess : generate computer-friendly inputs 
+Preprocess : generate stats as number of members
+Preprocess -right-> Distance : computer-friendly\ninputs
+Preprocess -down-> [*] : free preprocess\nresources 
+
+Distance : distance between a couple of members 
+Distance -right-> Distance : more queries
+Distance -down-> [*] : not more\nqueries
+
+@enduml
