@@ -45,6 +45,8 @@ and more *computer-friendly* inputs for following steps.
 the **distance** between A and B as the minimum number of ties required 
 to connect A and B.
 
+![divide and conquer](images/divide_and_conquer.png)
+
 That way it's easier to test and to hunt bugs down, 
 taking incremental steps as the ones in typical Agile sprints. 
 Besides, if some **microserver** solution might be tried, getting that task division
