@@ -39,6 +39,7 @@ data/SocialNetwork.txt
 
 # vim temp files
 *~
+*.swp
 
 # cmake
 build/

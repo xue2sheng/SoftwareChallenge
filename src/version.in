@@ -1,0 +1,6 @@
+// typical for gcc on Linux  __attribute__((used)) __attribute__((section("DATA")))
+
+#ifndef SoftwareChallengeVersion
+#define SoftwareChallengeVersion
+const char* SOFTWARE_CHALLENGE_VERSION = "SoftwareChallengeVersion: @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@";
+#endif // SoftwareChallengeVersion
