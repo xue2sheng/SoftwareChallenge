@@ -22,7 +22,7 @@ Launching that binary from that **build** directory:
 
 ## Linux
 
-Provided you got your distro up to date for latest c++ compilers and needed tools, as CMake, similar commands to Windows are expected:
+Provided you got your distro up to date for latest gcc c++ compilers and needed tools, as CMake, similar commands to Windows are expected:
 
         mkdir -p build
         cd build
@@ -37,6 +37,20 @@ Launching that binary from that **build** directory:
 	
 	echo `file ./src/* | grep ELF | sed "s/^\(.*\):.*$/\1/g"` | bash
 
-	
+## macOS
 
+Provided you got update your macOS box with latest apple clang c++ compiler (>= 9.1.0) and needed tools, as CMake (>= 3.11.4), maybe through Homebrew or similar, almost the very same Linux commands:
+
+	mkdir -p build
+	cd build
+	cmake ..
+	cmake --build .
+
+Double check that binary was generated without strange dependencies with **otool**:
+
+	otool -L `file src/* | grep executable | sed "s/^\(.*\):.*$/\1/g"`
+
+Launchng that binary from that **build** directory:
+
+	echo `file src/* | grep executable | sed "s/^\(.*\):.*$/\1/g"` | bash
 

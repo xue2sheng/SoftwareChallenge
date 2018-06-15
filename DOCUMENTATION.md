@@ -34,6 +34,19 @@ The documentation should be generated inside of **html** folder at that *build* 
 
 	firefox .\html\index.html
 
+## macOS
+
+Provided you got update your macOS box with latest apple clang c++ compiler (>= 9.1.0) and needed tools, as CMake (>= 3.11.4) or Doxygen (>= 1.8.14), maybe through Homebrew or similar, alomst the very same Linux commands:
+
+	mkdir -p build
+	cd build 
+	cmake .. -DBUILD_DOCUMENTATION:STRING=yes
+	doxygen doc/Doxyfile
+
+The documentation should be generated inside of **html** folder at that *build* directory:
+
+	opan -a Safari .\html\index.html
+
 # Diagrams
 
 Among zillions of available possibilities, [PlantUML](plantuml.com) lets you generate **dot** based diagrams from text files.
@@ -55,3 +68,10 @@ On Linux, something similar provided that *jar* file is placed at */opt/plantuml
 	cd ./images	
 	java -jar /opt/plantuml/plantuml.jar -progress ./diagram.uml
 	firefox ./diagram.png
+
+On macOS, almost the very same than Linux:
+
+	cd ./images	
+	java -jar /opt/plantuml/plantuml.jar -progress ./diagram.uml
+	open -a Safari ./diagram.png
+

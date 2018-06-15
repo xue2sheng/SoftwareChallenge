@@ -16,11 +16,9 @@ usual *CMake* commands, taking for granted they are launched from **Development 
 	cmake --build . --config Release
 	ctest -C Release
 
-If you want to launch it directly in order to obtain more details, provided you're in that *build\test\Release* folder:
+If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
 
-	cd test\Release
-	.\test*.exe --use-colour yes --success
-
+	.\test\Release\test*.exe --use-colour yes --success
 
 ## Linux 
 
@@ -32,9 +30,20 @@ Provided you got your distro up to date for latest c++ compilers and needed tool
 	cmake --build . 
 	ctest 
 
-If you want to launch it directly in order to obtain more details, provided you're in that *build/test* folder:
+If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
 
-	cd test
-	./test* --use-colour yes --success
+	./test/test* --use-colour yes --success
 
+## macOS
 
+Provided you got update your macOS box with latest apple clang c++ compiler (>= 9.1.0) and needed tools, as CMake (>= 3.11.4), maybe through Homebrew or similar, the very same Linux commands:
+
+	mkdir -p build
+	cd build
+	cmake ..
+	cmake --build .
+	ctest
+
+If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
+
+	./test/test* --use-colour yes --success
