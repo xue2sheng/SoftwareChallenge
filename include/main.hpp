@@ -1,5 +1,11 @@
-﻿// main.hpp : Include file for standard system include files,
-// or project specific include files.
+﻿/**
+* @file main.hpp
+* @author Andres Sevillano 
+* @date June 2018
+* @brief Collect public global headers.
+*
+* @see https://github.com/xue2sheng/SoftwareChallenge/blob/master/README.md#approach
+*/
 
 #pragma once
 

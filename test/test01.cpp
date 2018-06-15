@@ -38,7 +38,8 @@ SCENARIO("Process human-friendly inputs", "[file]") {
 		Collection network{};
 		REQUIRE(network.size() == 0);
 
-		network.process("C:/Users/user/Code/SoftwareChallenge/data/test01.txt");
+		//network.process("C:/Users/user/Code/SoftwareChallenge/data/test01.txt");
+		network.process("../../data/test01.txt");
 
 		WHEN("Reed expected number of members") {
 			

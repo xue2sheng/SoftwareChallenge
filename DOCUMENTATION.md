@@ -21,6 +21,18 @@ The documentation should be generated inside of **html** folder at that *build* 
 
 	start firefox .\html\index.html
 
+## Linux 
+
+Provided you got your latest needed tools, as CMake or Doxygen/Graphviz, on your distro, usual commands are expected:
+
+	mkdir -p build
+	cd build 
+	cmake ..
+	doxygen doc/Doxyfile
+
+The documentation should be generated inside of **html** folder at that *build* directory:
+
+	firefox .\html\index.html
 
 # Diagrams
 

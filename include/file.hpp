@@ -33,7 +33,7 @@ namespace SoftwareChallenge {
 		* @brief Add a new friend 
 		* @param new_friend add a new friend
 		*/
-		void Member::add(const IndexType& new_friend);
+		void add(const IndexType& new_friend);
 	};
 
 	/**

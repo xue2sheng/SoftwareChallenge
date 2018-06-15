@@ -16,6 +16,25 @@ usual *CMake* commands, taking for granted they are launched from **Development 
 	cmake --build . --config Release
 	ctest -C Release
 
-If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
+If you want to launch it directly in order to obtain more details, provided you're in that *build\test\Release* folder:
 
-	.\test\Release\*.exe --use-colour yes --success
+	cd test\Release
+	.\test*.exe --use-colour yes --success
+
+
+## Linux 
+
+Provided you got your distro up to date for latest c++ compilers and needed tools, as CMake, similar commands to Windows are expected:
+
+	mkdir -p build
+	cd build
+	cmake .. 
+	cmake --build . 
+	ctest 
+
+If you want to launch it directly in order to obtain more details, provided you're in that *build/test* folder:
+
+	cd test
+	./test* --use-colour yes --success
+
+

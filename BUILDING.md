@@ -19,3 +19,24 @@ Double check that binary was generated without strange dependencies with **dumpb
 Launching that binary from that **build** directory:
 
 	.\src\Release\*.exe
+
+## Linux
+
+Provided you got your distro up to date for latest c++ compilers and needed tools, as CMake, similar commands to Windows are expected:
+
+        mkdir -p build
+        cd build
+        cmake ..
+        cmake --build .
+
+Double check that binary was generated without strange dependencies with **ldd**:
+
+	ldd `file ./src/* | grep ELF | sed "s/^\(.*\):.*$/\1/g"`
+
+Launching that binary from that **build** directory:
+	
+	echo `file ./src/* | grep ELF | sed "s/^\(.*\):.*$/\1/g"` | bash
+
+	
+
+

@@ -1,3 +1,12 @@
+/**
+* @file file.cpp
+* @author Andres Sevillano 
+* @date June 2018
+* @brief Utilities to process human-friendly input file.
+*
+* @see https://github.com/xue2sheng/SoftwareChallenge/blob/master/README.md
+*/
+
 #include <file.hpp>
 #include <fstream>
 #include <string>
