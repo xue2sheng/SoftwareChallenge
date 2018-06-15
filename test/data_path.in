@@ -1,0 +1,4 @@
+#ifndef SoftwareChallengeDataPath
+#define SoftwareChallengeDataPath
+const char* SOFTWARE_CHALLENGE_DATA_PATH = "@CMAKE_SOURCE_DIR@/data";
+#endif // SoftwareChallengeDataPath

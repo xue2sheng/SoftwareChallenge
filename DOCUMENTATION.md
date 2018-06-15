@@ -1,7 +1,7 @@
 # Documentation
 
-Just using the usual suspect [Doxygen](www.stack.nl/~dimitri/doxygen/download.html
-). See [further details](https://p5r.uk/blog/2014/cmake-doxygen.html) on how to configure your environment
+Just using the usual suspect [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html). 
+See [further details](https://p5r.uk/blog/2014/cmake-doxygen.html) on how to configure your environment
 but **don't** forget to have [Graphviz](https://graphviz.gitlab.io/_pages/Download/Download_windows.html) installed in order to make **dot** available.
 
 So comment properly your code and invoke the usual suspect **CMake** target. 
@@ -27,7 +27,7 @@ Provided you got your latest needed tools, as CMake or Doxygen/Graphviz, on your
 
 	mkdir -p build
 	cd build 
-	cmake ..
+	cmake .. -DBUILD_DOCUMENTATION:STRING=yes
 	doxygen doc/Doxyfile
 
 The documentation should be generated inside of **html** folder at that *build* directory:
