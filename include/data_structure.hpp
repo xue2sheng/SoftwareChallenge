@@ -29,8 +29,8 @@ namespace SoftwareChallenge {
 	static_assert(INDEX_MAX > 90000);
 	
 	/** @brief Knowing that the longest name in our social network is about 24 characters, define its compact version */
-	constexpr uint8_t NAME_MAX{ 32 };
-	typedef uint8_t NameType[NAME_MAX];
+	constexpr const uint8_t NAME_LENTGH_MAX{ 32 };
+	typedef uint8_t NameType[NAME_LENTGH_MAX];
 	
 	/** @brief double check that a byte is equivalent to a char */
 	static_assert(sizeof(char) == sizeof(uint8_t));
