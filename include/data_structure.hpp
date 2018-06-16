@@ -1,5 +1,5 @@
 /**
-* @file data_structue.hpp
+* @file data_structure.hpp
 * @author Andres Sevillano
 * @date June 2018
 * @brief Compact computer-friendly data structures.
@@ -16,6 +16,7 @@
 #include <unordered_set>
 #include <limits>
 #include <cstdint>
+#include <tuple>
 #include <vector>
 
 namespace SoftwareChallenge {
@@ -54,6 +55,7 @@ namespace SoftwareChallenge {
 	* @brief Compact info for mapping names and indexes
 	*/
 	struct NameIndex : public std::map<NameType, IndexType> {
+		
 	};
 
 	/**

@@ -1,5 +1,5 @@
 /**
-* @file preporcess.hpp
+* @file preprocess.hpp
 * @author Andres Sevillano 
 * @date June 2018
 * @brief Process human-friendly input into a more computer-friendly one.
@@ -11,9 +11,14 @@
 
 #pragma once
 
-#include <map>
-#include <tuple>
 #include "data_structure.hpp"
+
+/**
+* @brief Get a more compact social network information
+* @param file_nane human-friendly input file name
+* @return false if error and its description, otherwise true and a summary report. As well, number of members in that social network
+*/
+std::tuple<bool, std::string, size_t> preprocess(const std::string& file_name);
 
 namespace SoftwareChallenge {
 
@@ -41,7 +46,7 @@ namespace SoftwareChallenge {
 		* @brief Add a new member if needed 
 		* @param new_member add a new member 
 		*/
-		Collection::iterator add(const std::string& key);
+		iterator add(const std::string& key);
 
 		/**
 		* @brief Add a new couple of friends
@@ -77,10 +82,10 @@ namespace SoftwareChallenge {
 		/**
 		* @brief Given a collection, try to compact its information in a computer-friendly way 
 		* @param file_nane human-friendly input file name
-		* @return false if error and its description, otherwise true and a summary report
+		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network.
 		*/
-		std::tuple<bool, std::string> compact();
+		std::tuple<bool, std::string, size_t> compact();
 	};
-
+	
 } // namespace
 			

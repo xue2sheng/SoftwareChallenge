@@ -16,6 +16,24 @@
 
 using namespace SoftwareChallenge;
 
+std::tuple<bool, std::string, size_t> preprocess(const std::string& file_name)
+{
+	if (file_name.empty()) {
+		return{false, "Empty file name", 0};
+	}
+
+	// this way all collection non-compact will be freed in a RAII way
+	Collection network;
+
+	// process file
+	if (auto[success, hint] = network.process(file_name); !success) {
+		return { success, hint, network.size() };
+	}
+
+	// compact info
+	return network.compact(); 
+}
+
 void Collection::reset() { clear(); friends_max = friends_min = name_max = name_min = 0; popular_max = popular_min = ""; }
 
 inline Member::size_type Collection::friendsMax() const { return friends_max; }
@@ -121,10 +139,10 @@ std::tuple<bool, std::string> Collection::process(const std::string& file_name)
 	};
 }
 
-std::tuple<bool, std::string> Collection::compact()
+std::tuple<bool, std::string, size_t> Collection::compact()
 {
 	if (size() == 0) {
-		return { false, "Nothing to compact" };
+		return { false, "Nothing to compact", 0 };
 	}
 
 	for (const auto& item : *this) {
@@ -146,7 +164,9 @@ std::tuple<bool, std::string> Collection::compact()
 		" popular_min=" + popular_min + 
 		" friends_min=" + std::to_string(friends_min) +
 		" popular_max=" + popular_max + 
-		" friends_max=" + std::to_string(friends_max) 
+		" friends_max=" + std::to_string(friends_max),
+		size()
 	};
 
 }
+
