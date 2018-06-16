@@ -1,5 +1,5 @@
 /**
-* @file data_structure.cpp
+* @file commandline.cpp
 * @author Andres Sevillano
 * @date June 2018
 * @brief Utilities to compact computer-friendly collection info.
@@ -9,6 +9,7 @@
 /** @brief Helper for options */
 
 #include <iostream>
+#include <algorithm>
 #include "commandline.hpp"
 
 char* getCmdOption(char ** begin, char ** end, const std::string & option)
