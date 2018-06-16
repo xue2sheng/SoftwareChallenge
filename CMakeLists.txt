@@ -4,10 +4,10 @@
 cmake_minimum_required (VERSION 3.10)
 project ("SoftwareChallenge")
 
-# The project version number.
+# The project version number for binaries and for doxygen
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   5   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   6   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 # Include sub-projects.

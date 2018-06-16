@@ -11,41 +11,14 @@
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-#include "file.hpp" 
+#include "preprocess.hpp" 
 
 using namespace SoftwareChallenge;
 
 SCENARIO("Process human-friendly inputs", "[file]") {
 
-	GIVEN("A human-friendly input line of two friends") {
-	
-		Collection network{};
-		REQUIRE(network.size() == 0);
-
-		network.add("John", "Ian");
-		REQUIRE(network.size() == 2);
-
-		WHEN("They both were added sequentially") {
-
-			auto John = network["John"];
-			REQUIRE(John.index == 0);
-
-			auto Ian = network["Ian"];
-			REQUIRE(Ian.index == 1);
-
-			THEN("They both must be friends") {
-				for (const auto& i : John) {
-					REQUIRE(i == Ian.index);
-				}
-				for (const auto& j : Ian) {
-					REQUIRE(j == John.index);
-				}
-			}
-		}
-	}
-
 	GIVEN("A human-friendly input file") {
-	
+
 		Collection network{};
 		REQUIRE(network.size() == 0);
 
@@ -54,11 +27,11 @@ SCENARIO("Process human-friendly inputs", "[file]") {
 		std::string data_path{ SOFTWARE_CHALLENGE_DATA_PATH };
 		data_path += "/test01.txt";
 
-		network.process(data_path);
+		auto [ success, hint ] = network.process(data_path);
+		REQUIRE( success == true );
+		REQUIRE( hint == "size=402 name_min=6 name_max=20" );
 
-		WHEN("Reed expected number of members") {
-			
-			REQUIRE(network.size() == 420);
+		WHEN("Read expected number of members") {
 
 			//MYLES_JEFFCOAT, LANNY_TIBURCIO
 			auto Lanny = network["LANNY_TIBURCIO"];
@@ -69,9 +42,22 @@ SCENARIO("Process human-friendly inputs", "[file]") {
 			THEN("MYLES_JEFFCOAT and LANNY_TIBURCIO should be friends") {
 				REQUIRE( Nyles.end() != Nyles.find(Lanny.index) );
 			}
+			THEN("MARIANO_UMPHRESS should get some index") {
+				auto Mariano = network["MARIANO_UMPHRESS"];
+				REQUIRE(Mariano.size() > 0);
+			}
+			THEN("NICKY_MURR should get the latest index") {
+				auto Nicky = network["NICKY_MURR"];
+				REQUIRE(Nicky.size() > 0);
+				REQUIRE(Nicky.index == (network.size() - 1));
+			}
+
+			THEN("Compact information in a computer-friendly way") {
+				auto[success, hint] = network.compact();
+				REQUIRE( success == true );
+				REQUIRE( hint == "size=402 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215" );
+			}
 		}
+
 	}
-
-
-	
 }
