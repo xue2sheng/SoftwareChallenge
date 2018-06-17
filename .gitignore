@@ -33,6 +33,7 @@
 
 # Visual Studio
 .vs/
+*.json
 
 # Huge data files
 #data/SocialNetwork.txt
