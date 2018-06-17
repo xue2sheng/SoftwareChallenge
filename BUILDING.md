@@ -1,6 +1,6 @@
 # Buiding
 
-Although **CMake** makes it easy to build your code on different platforms, there are always little details to take into account. 
+Although [**CMake**](CMakeLists.txt) makes it easy to build your code on different platforms, there are always little details to take into account. 
 
 ## Windows
 
@@ -56,7 +56,32 @@ Launchng that binary from that **build** directory:
 
 # Version number
 
-Being a *toy project*, that typical version number needed to keep in sync documentation and binaries versions has been directly defined at the main CMakeLists.txt file instead of the more usual version.txt.
-That means that you have to drop CMake caches to really update that number in your executables or in your *doxygen* generated documentation; removing the whole build directory could be the most effective path. Another approach might be to remove just *build/CMakeCache.txt* and launch all the commands again. Choose your poison!
+Being a *toy project*, that typical version number needed to keep in sync documentation and binaries versions has been directly defined at the main CMakeLists.txt file instead of the more usual version.txt managed by extra scripts or extra cmake instructions.
 
-In real production, cleaning obsolete artifacts is paramount between builds and more complex scripts could be automatically launched by CI/CD platforms.
+	# CMakeList.txt : Top-level CMake project file, do global configuration
+	# and include sub-projects here.
+	#
+	cmake_minimum_required (VERSION 3.10)
+	project ("SoftwareChallenge")
+	#
+	# The project version number for binaries and for doxygen
+	set(VERSION_MAJOR   0    CACHE STRING "Project major version number.")
+	set(VERSION_MINOR   0    CACHE STRING "Project minor version number.")
+	set(VERSION_PATCH   10   CACHE STRING "Project patch version number.")
+	mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+	#
+	# Include sub-projects.
+	add_subdirectory ("src")
+	#
+	if(EXTRA)
+	  #
+	  # testing with included Catch2 header library
+	  enable_testing()
+	  add_subdirectory ("test")
+	  #
+	  # Documentation with expected installed Doxygen/Graphviz utitlity
+  	  add_subdirectory("doc")
+	  #
+	endif()
+
+That means that you have to drop CMake caches to really update that number in your executables or in your *doxygen* generated documentation; removing the whole build directory could be the most effective path. Don't forget that detail, specially if you work with IDE's.

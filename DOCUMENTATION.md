@@ -49,6 +49,12 @@ The documentation should be generated inside of **html** folder at that *build* 
 
 	opan -a Safari .\html\index.html
 
+# Documentation version
+
+As stated at [BULDING](BULDING.md), that syncronized version number is maintained at the main [CMakeLisis.txt file](CMakeLists.txt) and purging CMake caches is needed to properly update it.
+
+![Doxygen](images/Doxygen.png)
+
 # Diagrams
 
 Among zillions of available possibilities, [PlantUML](plantuml.com) lets you generate **dot** based diagrams from text files.

@@ -24,6 +24,7 @@ size_t NameIndex::neededBytes() const
 
 std::vector<uint8_t> NameIndex::compact() const
 {
+    // reserve only that needed room
     size_t needed { neededBytes() };
     std::vector<uint8_t> result(needed);
     result.reserve(needed);
@@ -42,4 +43,40 @@ std::vector<uint8_t> NameIndex::compact() const
     }
 
     return result;
+}
+
+IndexType NameIndex::load(const std::vector<uint8_t>& raw)
+{
+    // nothing to work with
+    if( raw.empty() ) { return 0; }
+
+    // sanity check
+    size_t raw_size = raw.size();
+    if( raw_size < sizeof(IndexType) ) { return 0; }
+    IndexType length { *raw.data() };
+
+    // business logic check
+    IndexType expected_length =
+            // don't count intial length info
+            (raw_size - sizeof(IndexType)) /
+            // every element is a pair name->index
+            (sizeof(NameType) + sizeof(IndexType));
+
+    if( length != expected_length ) { return 0; }
+
+    // clean current data to avoid messing about with stale info
+    clear();
+
+    for(IndexType i = 0; i<length; ++i) {
+
+        // don't forget to skip initial length
+        const uint8_t* ptr = raw.data() + sizeof(IndexType) + (i * (sizeof(NameType) + sizeof(IndexType)));
+
+        // emplace payload
+        const char* name = reinterpret_cast<const char*>(ptr);
+        const IndexType index { *(ptr + sizeof(NameType)) };
+        emplace( name, index);
+    }
+
+    return length;
 }

@@ -59,6 +59,7 @@ namespace SoftwareChallenge {
     struct NameIndex : public std::map<std::string, IndexType> {
         inline size_t neededBytes() const;
         std::vector<uint8_t> compact() const;
-	};
+        IndexType load(const std::vector<uint8_t>& raw);
+    };
 
 } // namespace

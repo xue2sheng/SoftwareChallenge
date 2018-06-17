@@ -1,3 +1,12 @@
+/**
+* @file test00.cpp 
+* @author Andres Sevillano 
+* @date June 2018
+* @brief Some basic tests on how to work with data structures.
+*
+* @see https://github.com/xue2sheng/SoftwareChallenge/blob/master/README.md
+*/
+
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 #include "data_structure.hpp"
@@ -24,7 +33,7 @@ SCENARIO("Check how to compact/load data structures", "[structure]") {
 			}
         }
 
-        WHEN("Non empty map") {
+        WHEN("An empty map is manually loaded") {
 
             name2index.clear();
             name2index["John"] = 0;
@@ -53,5 +62,26 @@ SCENARIO("Check how to compact/load data structures", "[structure]") {
             }
         }
 
-	}
+        WHEN("An empty map is automatically loaded") {
+
+            name2index.clear();
+            name2index["John"] = 0;
+            name2index["Ian"] = 1;
+            std::vector<uint8_t> raw { name2index.compact() };
+            name2index.clear();
+            IndexType length { name2index.load(raw) };
+
+            THEN("Compact its contain must be the amount needed for its length and its payload") {
+               REQUIRE( raw.size() == (3*sizeof(IndexType) + 2*sizeof(NameType)) );
+               REQUIRE( length == 2 );
+               REQUIRE( name2index.size() == 2);
+               REQUIRE( length == name2index.size() );
+
+               IndexType John_index = name2index["John"];
+               REQUIRE( John_index == 0 );
+               IndexType Ian_index = name2index["Ian"];
+               REQUIRE( Ian_index == 1 );
+            }
+        }
+   }
 }
