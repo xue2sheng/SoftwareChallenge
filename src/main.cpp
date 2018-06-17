@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	auto[file_name, stats] = commandline_arguments(argc, argv);
 
 	// preprocess human-friendly input into something more compact
-	auto[success, hint, number_of_members] = preprocess(file_name); 
+	auto[success, hint, number_of_members, name2index ] = preprocess(file_name); 
 	if (!success) {
 		std::cerr << "ERROR: " << hint.c_str() << std::endl; 
 		return 1;

@@ -18,7 +18,7 @@
 * @param file_nane human-friendly input file name
 * @return false if error and its description, otherwise true and a summary report. As well, number of members in that social network
 */
-std::tuple<bool, std::string, size_t> preprocess(const std::string& file_name);
+std::tuple<bool, std::string, size_t, SoftwareChallenge::NameIndex > preprocess(const std::string& file_name);
 
 namespace SoftwareChallenge {
 
@@ -82,9 +82,9 @@ namespace SoftwareChallenge {
 		/**
 		* @brief Given a collection, try to compact its information in a computer-friendly way 
 		* @param file_nane human-friendly input file name
-		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network.
+		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
 		*/
-		std::tuple<bool, std::string, size_t> compact();
+		std::tuple<bool, std::string, size_t, NameIndex> compact();
 	};
 	
 } // namespace

@@ -16,10 +16,10 @@
 
 using namespace SoftwareChallenge;
 
-std::tuple<bool, std::string, size_t> preprocess(const std::string& file_name)
+std::tuple<bool, std::string, size_t, NameIndex> preprocess(const std::string& file_name)
 {
 	if (file_name.empty()) {
-		return{false, "Empty file name", 0};
+		return{ false, "Empty file name", 0, NameIndex{} };
 	}
 
 	// this way all collection non-compact will be freed in a RAII way
@@ -27,7 +27,7 @@ std::tuple<bool, std::string, size_t> preprocess(const std::string& file_name)
 
 	// process file
 	if (auto[success, hint] = network.process(file_name); !success) {
-		return { success, hint, network.size() };
+		return { success, hint, network.size(), NameIndex{} };
 	}
 
 	// compact info
@@ -139,20 +139,28 @@ std::tuple<bool, std::string> Collection::process(const std::string& file_name)
 	};
 }
 
-std::tuple<bool, std::string, size_t> Collection::compact()
+std::tuple<bool, std::string, size_t, NameIndex> Collection::compact()
 {
 	if (size() == 0) {
-		return { false, "Nothing to compact", 0 };
+		return { false, "Nothing to compact", 0, NameIndex{} };
 	}
+
+	NameIndex name2index;
 
 	for (const auto& item : *this) {
 
 		// alias
-		const auto& num{ item.second.size() };
+		const auto& name{ item.first };
+		const auto& index{ item.second.index };
+		const auto& friends{ item.second };
+		const auto& num{ friends.size() };
+
+		// collect name->index map
+		name2index[name] = index;
 
 		// stats for future optimization
-		if (friends_min > num) { friends_min = num; popular_min = item.first;  }
-		if (friends_max < num) { friends_max = num; popular_max = item.first;  }
+		if (friends_min > num) { friends_min = num; popular_min = name;  }
+		if (friends_max < num) { friends_max = num; popular_max = name;  }
 	}
 
 	// at least there should be some member in the collection 
@@ -165,7 +173,8 @@ std::tuple<bool, std::string, size_t> Collection::compact()
 		" friends_min=" + std::to_string(friends_min) +
 		" popular_max=" + popular_max + 
 		" friends_max=" + std::to_string(friends_max),
-		size()
+		size(),
+		name2index	
 	};
 
 }

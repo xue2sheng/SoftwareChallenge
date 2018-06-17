@@ -66,10 +66,10 @@ std::tuple<std::string, bool> commandline_arguments(int argc, char** argv)
 		const std::string data_path{ SOFTWARE_CHALLENGE_DATA_PATH };
 
 		// size=402 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215
-		// file_name = data_path + "/test01.txt";
+		file_name = data_path + "/test01.txt";
 
 		// size=82168 name_min=6 name_max=24 popular_min=AARON_BOUSMAN friends_min=1 popular_max=CLIFTON_TIMMIS friends_max=2552
-		file_name = data_path + "/SocialNetwork.txt";
+		// file_name = data_path + "/SocialNetwork.txt";
 	}
 
 	return { file_name, stats };

@@ -22,6 +22,15 @@ size_t NameIndex::neededBytes() const
     return ( sizeof(IndexType) + ( size() * (sizeof(NameType) + sizeof(IndexType)) ) );
 }
 
+std::tuple<bool, IndexType> NameIndex::getIndex(const std::string& name) const
+{
+	const auto& found = find(name);
+	if (found == end()) { return { false, INDEX_MAX }; }
+
+	return { true, found->second };
+}
+
+
 std::vector<uint8_t> NameIndex::compact() const
 {
     // reserve only that needed room
@@ -29,7 +38,7 @@ std::vector<uint8_t> NameIndex::compact() const
     std::vector<uint8_t> result(needed);
     result.reserve(needed);
 
-    // First number of memebers
+    // First number of members
     IndexType length = static_cast<IndexType>(size());
     std::memcpy(result.data(), static_cast<const void*>(&length), sizeof(IndexType));
 
@@ -56,11 +65,12 @@ IndexType NameIndex::load(const std::vector<uint8_t>& raw)
     IndexType length { *raw.data() };
 
     // business logic check
-    IndexType expected_length =
+    IndexType expected_length = static_cast<IndexType>(
             // don't count intial length info
             (raw_size - sizeof(IndexType)) /
             // every element is a pair name->index
-            (sizeof(NameType) + sizeof(IndexType));
+            (sizeof(NameType) + sizeof(IndexType))
+	);
 
     if( length != expected_length ) { return 0; }
 

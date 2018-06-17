@@ -60,6 +60,17 @@ SCENARIO("Check how to compact/load data structures", "[structure]") {
                 REQUIRE( John == "John");
                 REQUIRE( secondIndex == 0 );
             }
+
+			THEN("It's possible to know whether a member belongs to this social network or not") {
+
+				auto[found, index] = name2index.getIndex("John"); 
+				REQUIRE(found == true);
+				REQUIRE(index == 0);
+
+				auto[exists, whatever] = name2index.getIndex("Abominable_Snowman");
+				REQUIRE(exists == false);
+				REQUIRE(whatever == INDEX_MAX);
+			}
         }
 
         WHEN("An empty map is automatically loaded") {

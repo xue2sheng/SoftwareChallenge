@@ -53,10 +53,14 @@ SCENARIO("Process human-friendly inputs", "[file]") {
 			}
 
 			THEN("Compact information in a computer-friendly way") {
-				auto[success, hint, number_of_members] = network.compact();
+				auto[success, hint, number_of_members, name2index ] = network.compact();
 				REQUIRE( success == true );
 				REQUIRE(number_of_members == 402);
 				REQUIRE( hint == "size=402 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215" );
+				REQUIRE(name2index.size() == 402);
+				auto[exists, index] = name2index.getIndex("NICKY_MURR");
+				REQUIRE(exists == true);
+				REQUIRE(index == 401);
 			}
 		}
 

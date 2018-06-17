@@ -57,8 +57,30 @@ namespace SoftwareChallenge {
     *  NameType is big enough for this social network memeber size < 32 ASCII chars.
 	*/
     struct NameIndex : public std::map<std::string, IndexType> {
+
+		/**
+		* @brief Raw size
+		* @return Number of bytes required for this map
+		*/
         inline size_t neededBytes() const;
+
+		/**
+		* @brief Index info 
+		* @return Get index if name exists 
+		*/
+        std::tuple<bool,IndexType> getIndex(const std::string& name) const;
+
+		/**
+		* @brief serialize useful info into its raw bytes
+		* @return Info in raw bytes
+		*/
         std::vector<uint8_t> compact() const;
+
+		/**
+		* @brief deserialize raw bytes into runable map
+		* @param raw input bytes
+		* @return size stored in the raw data. It should match map size at the end of loading
+		*/
         IndexType load(const std::vector<uint8_t>& raw);
     };
 
