@@ -3,7 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.10)
 
-add_executable(test00 "test00.cpp")
+include_directories(test00 PRIVATE ${CMAKE_SOURCE_DIR}/include)
+add_executable(test00 $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "test00.cpp")
 
 include_directories(test01 PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_executable(test01 $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "test01.cpp")

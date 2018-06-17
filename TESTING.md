@@ -12,13 +12,14 @@ usual *CMake* commands, taking for granted they are launched from **Development 
 
 	mkdir build
 	cd build
-	cmake .. -G "Visual Studio 15 2017 Win64"
+	cmake .. -G "Visual Studio 15 2017 Win64" -DEXTRA:STRING=yes
 	cmake --build . --config Release
 	ctest -C Release
 
 If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
 
-	.\test\Release\test*.exe --use-colour yes --success
+	.\test\Release\test00.exe --use-colour yes --success
+	.\test\Release\test01.exe --use-colour yes --success
 
 ## Linux 
 
@@ -26,13 +27,14 @@ Provided you got your distro up to date for latest c++ compilers and needed tool
 
 	mkdir -p build
 	cd build
-	cmake .. 
+	cmake .. -DEXTRA:STRING=yes
 	cmake --build . 
 	ctest 
 
 If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
 
-	./test/test* --use-colour yes --success
+	./test/test00 --use-colour yes --success
+	./test/test01 --use-colour yes --success
 
 ## macOS
 
@@ -40,10 +42,11 @@ Provided you got update your macOS box with latest apple clang c++ compiler (>= 
 
 	mkdir -p build
 	cd build
-	cmake ..
+	cmake .. -DEXTRA:STRING=yes
 	cmake --build .
 	ctest
 
 If you want to launch it directly in order to obtain more details, provided you're in that *build* folder:
 
-	./test/test* --use-colour yes --success
+	./test/test00 --use-colour yes --success
+	./test/test01 --use-colour yes --success

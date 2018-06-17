@@ -47,22 +47,18 @@ namespace SoftwareChallenge {
 	    * @brief Add a new friend
 		* @param new_friend add a new friend
 		*/
-		void add(const IndexType& new_friend);
+        void add(const IndexType& new_friend);
 	};
 
 	/**
 	* class NameIndex 
-	* @brief Compact info for mapping names and indexes
+    * @brief Compact info for mapping names and indexes
+    *
+    *  NameType is big enough for this social network memeber size < 32 ASCII chars.
 	*/
-	struct NameIndex : public std::map<NameType, IndexType> {
-		
-	};
-
-	/**
-	* class IndexName
-	* @brief Compact info for mapping indexes and names
-	*/
-	struct IndexName : public std::vector<NameType> {
+    struct NameIndex : public std::map<std::string, IndexType> {
+        inline size_t neededBytes() const;
+        std::vector<uint8_t> compact() const;
 	};
 
 } // namespace

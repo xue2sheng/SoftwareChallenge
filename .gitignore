@@ -43,3 +43,6 @@
 
 # cmake
 build/
+
+# QtCreator CMake
+CMakeLists.txt.user

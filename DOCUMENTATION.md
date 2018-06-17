@@ -14,12 +14,14 @@ usual *CMake* commands, taking for granted they are launched from **Development 
 
 	mkdir build
 	cd build 
-	cmake .. -G "Visual Studio 15 2017 Win64" -DBUILD_DOCUMENTATION:STRING=yes
+	cmake .. -G "Visual Studio 15 2017 Win64" -DEXTRA:STRING=yes
 	doxygen doc/Doxyfile
 
 The documentation should be generated inside of **html** folder at that *build* directory:
 
 	start firefox .\html\index.html
+
+Using *firefox* because latest *Microsft Edge* versions seem not to be happy with starting from commandline local content; there must be a way I don't know.
 
 ## Linux 
 
@@ -27,7 +29,7 @@ Provided you got your latest needed tools, as CMake or Doxygen/Graphviz, on your
 
 	mkdir -p build
 	cd build 
-	cmake .. -DBUILD_DOCUMENTATION:STRING=yes
+	cmake .. -DEXTRA:STRING=yes
 	doxygen doc/Doxyfile
 
 The documentation should be generated inside of **html** folder at that *build* directory:
@@ -40,7 +42,7 @@ Provided you got update your macOS box with latest apple clang c++ compiler (>= 
 
 	mkdir -p build
 	cd build 
-	cmake .. -DBUILD_DOCUMENTATION:STRING=yes
+	cmake .. -DEXTRA=yes
 	doxygen doc/Doxyfile
 
 The documentation should be generated inside of **html** folder at that *build* directory:
