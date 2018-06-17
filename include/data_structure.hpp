@@ -84,4 +84,46 @@ namespace SoftwareChallenge {
         IndexType load(const std::vector<uint8_t>& raw);
     };
 
+    /**
+     * class FriendGraph
+     * @brief Keep friend relationshtip in a compact way
+     *
+     * Using only idexes makes it easier to serialize/deserialize from/to hard disk/memory.
+     *
+     * A vector of vectors of indixes should siffice. Don't forget to ajust their capacity.
+     */
+    struct FriendGraph : public std::vector<std::vector<IndexType>> {
+
+        /**
+        * @brief Raw size
+        * @return Number of bytes required for this array
+        */
+        inline size_t neededBytes() const;
+
+        /**
+        * @brief serialize useful info into its raw bytes
+        * @return Info in raw bytes
+        *
+        * if n = number of members and
+        *  m = number of friends of then
+        * the first n size_t positions will point to
+        * each of friends vector
+        *
+        * 0) one IndexTyep (4 bytes) with the number of members (n)
+        * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to
+        * 2) n set of IndexType following the structrue:
+        *   2a) one IndexType with the number of friends for this member (m)
+        *   2b) m IndexType as friends indexes for this member
+        */
+        std::vector<uint8_t> compact() const;
+
+        /**
+        * @brief deserialize raw bytes into runable array
+        * @param raw input bytes
+        * @return size stored in the raw data. It should match map size at the end of loading
+        */
+        IndexType load(const std::vector<uint8_t>& raw);
+
+    };
+
 } // namespace

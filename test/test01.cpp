@@ -53,16 +53,31 @@ SCENARIO("Process human-friendly inputs", "[file]") {
 			}
 
 			THEN("Compact information in a computer-friendly way") {
-				auto[success, hint, number_of_members, name2index ] = network.compact();
+                auto[success, hint, number_of_members, name2index, friendGraph ] = network.compact();
 				REQUIRE( success == true );
 				REQUIRE(number_of_members == 402);
-				REQUIRE( hint == "size=402 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215" );
+                REQUIRE( hint == "size=402 relationships=866 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215" );
+
+                // name->index OK
 				REQUIRE(name2index.size() == 402);
 				auto[exists, index] = name2index.getIndex("NICKY_MURR");
 				REQUIRE(exists == true);
-				REQUIRE(index == 401);
-			}
-		}
+                REQUIRE(index == 401);
 
+                // friend graph OK
+                // size=402 name_min=6 name_max=20
+                REQUIRE(friendGraph.size() == 402);
+                // popular_min=ABEL_BONNES friends_min=1
+                auto[foundAbel, indexAbel] = name2index.getIndex("ABEL_BONNES");
+                REQUIRE(foundAbel == true);
+                REQUIRE(friendGraph[indexAbel].size() == 1);
+                REQUIRE(friendGraph[indexAbel].capacity() == 1);
+                // popular_max=MYLES_JEFFCOAT friends_max=215
+                auto[foundMyles, indexMyles] = name2index.getIndex("MYLES_JEFFCOAT");
+                REQUIRE(foundMyles == true);
+                REQUIRE(friendGraph[indexMyles].size() == 215);
+                REQUIRE(friendGraph[indexMyles].capacity() == 215);
+            }
+		}
 	}
 }

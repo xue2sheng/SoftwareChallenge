@@ -16,10 +16,10 @@
 
 using namespace SoftwareChallenge;
 
-std::tuple<bool, std::string, size_t, NameIndex> preprocess(const std::string& file_name)
+std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> preprocess(const std::string& file_name)
 {
 	if (file_name.empty()) {
-		return{ false, "Empty file name", 0, NameIndex{} };
+        return{ false, "Empty file name", 0, NameIndex{}, FriendGraph{} };
 	}
 
 	// this way all collection non-compact will be freed in a RAII way
@@ -27,21 +27,28 @@ std::tuple<bool, std::string, size_t, NameIndex> preprocess(const std::string& f
 
 	// process file
 	if (auto[success, hint] = network.process(file_name); !success) {
-		return { success, hint, network.size(), NameIndex{} };
+        return { success, hint, network.size(), NameIndex{}, FriendGraph{} };
 	}
 
 	// compact info
 	return network.compact(); 
 }
 
-void Collection::reset() { clear(); friends_max = friends_min = name_max = name_min = 0; popular_max = popular_min = ""; }
+void Collection::reset()
+{
+    clear(); name2index.clear(); friendGraph.clear(); relations = 0;
+    friends_max = friends_min = name_max = name_min = 0; popular_max = popular_min = "";
+}
 
+inline size_t Collection::relationships() const { return relations; }
 inline Member::size_type Collection::friendsMax() const { return friends_max; }
 inline Member::size_type Collection::friendsMin() const { return friends_min; }
 inline std::string::size_type Collection::nameMax() const { return name_max; }
 inline std::string::size_type Collection::nameMin() const { return name_min; }
 inline std::string Collection::popularMax() const { return popular_max; }
 inline std::string Collection::popularMin() const { return popular_min; }
+inline NameIndex Collection::nameIndex() const { return name2index; }
+inline FriendGraph Collection::graph() const { return friendGraph; }
 
 Collection::iterator Collection::add(const std::string& key)
 {
@@ -139,13 +146,20 @@ std::tuple<bool, std::string> Collection::process(const std::string& file_name)
 	};
 }
 
-std::tuple<bool, std::string, size_t, NameIndex> Collection::compact()
+std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> Collection::compact()
 {
-	if (size() == 0) {
-		return { false, "Nothing to compact", 0, NameIndex{} };
+    name2index.clear();
+    friendGraph.clear();
+    relations = 0;
+    friends_max = 0;
+    friends_min = INDEX_MAX;
+
+    if (size() == 0) {
+        return { false, "Nothing to compact", 0, name2index, friendGraph };
 	}
 
-	NameIndex name2index;
+    // reseve space to avoid vector resizing as much as possible
+    friendGraph.resize(size());
 
 	for (const auto& item : *this) {
 
@@ -158,15 +172,28 @@ std::tuple<bool, std::string, size_t, NameIndex> Collection::compact()
 		// collect name->index map
 		name2index[name] = index;
 
-		// stats for future optimization
+        // collect friend relationships
+        friendGraph[index] = std::vector<IndexType>(friends.begin(), friends.end());
+        friendGraph[index].resize(num);
+
+        // stats for future optimization
+        relations += num;
 		if (friends_min > num) { friends_min = num; popular_min = name;  }
 		if (friends_max < num) { friends_max = num; popular_max = name;  }
 	}
 
-	// at least there should be some member in the collection 
+    // order friend sets from more popular to less one
+    // this is going to take time in order to spare it once we only work with the compact version
+    // so hopefully it'll only be done once --> that means computer-friendly ;)
+    for (auto&& i : friendGraph) {
+        std::sort( i.begin(), i.end(), [&](const auto& a, const auto& b) { return (friendGraph[a].size() > friendGraph[b].size()); });
+    }
+
+    // at least there should be some member in the collection
 	return {
 		(size() > 0),
-		"size=" + std::to_string(size()) + 
+        "size=" + std::to_string(size()) +
+        " relationships=" + std::to_string(relations) +
 		" name_min=" + std::to_string(name_min) + 
 		" name_max=" + std::to_string(name_max) + 
 		" popular_min=" + popular_min + 
@@ -174,8 +201,8 @@ std::tuple<bool, std::string, size_t, NameIndex> Collection::compact()
 		" popular_max=" + popular_max + 
 		" friends_max=" + std::to_string(friends_max),
 		size(),
-		name2index	
+        name2index,
+        friendGraph
 	};
-
 }
 

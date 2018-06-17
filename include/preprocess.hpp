@@ -18,7 +18,7 @@
 * @param file_nane human-friendly input file name
 * @return false if error and its description, otherwise true and a summary report. As well, number of members in that social network
 */
-std::tuple<bool, std::string, size_t, SoftwareChallenge::NameIndex > preprocess(const std::string& file_name);
+std::tuple<bool, std::string, size_t, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> preprocess(const std::string& file_name);
 
 namespace SoftwareChallenge {
 
@@ -28,8 +28,16 @@ namespace SoftwareChallenge {
 	*/
 	class Collection : public std::map<const std::string, Member> {
 
+        // Some redundant comapct info
+        /** @brief Name Index mapping */
+        NameIndex name2index {};
+        /** @brief friends graph */
+        FriendGraph friendGraph{};
+
 		// some stats
-		/** @brief Maximum number of friends for one member */
+        /** @brief Number of relationships in the graph */
+        size_t relations {0};
+        /** @brief Maximum number of friends for one member */
 		Member::size_type friends_max {0};			
 		/** @brief Minimum number of friends for one member */
 		Member::size_type friends_min {INDEX_MAX};	
@@ -59,7 +67,9 @@ namespace SoftwareChallenge {
 		/** @brief Reset to its initial values this collection */
 		void reset();
 
-		/** @return Maximum number of friends for one member */
+        /** @return Number of relationships in the graph */
+        inline size_t relationships() const;
+        /** @return Maximum number of friends for one member */
 		inline Member::size_type friendsMax() const;  
 		/** @return Minimum number of friends for one member */
 		inline Member::size_type friendsMin() const;
@@ -71,7 +81,11 @@ namespace SoftwareChallenge {
 		inline std::string popularMax() const;	
 		/** @return Member with fewer friends */
 		inline std::string popularMin() const;
-	
+        /** @return Name Index mapping */
+        inline NameIndex nameIndex() const;
+        /** @return Name Index mapping */
+        inline FriendGraph graph() const;
+
 		/**
 		* @brief Given an input file, feed our list of members 
 		* @param file_nane human-friendly input file name
@@ -84,7 +98,7 @@ namespace SoftwareChallenge {
 		* @param file_nane human-friendly input file name
 		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
 		*/
-		std::tuple<bool, std::string, size_t, NameIndex> compact();
+        std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
 	};
 	
 } // namespace

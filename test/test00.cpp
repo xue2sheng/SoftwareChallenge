@@ -30,7 +30,7 @@ SCENARIO("Check how to compact/load data structures", "[structure]") {
                 REQUIRE( compact.size() == sizeof(IndexType) );
                 IndexType length { *compact.data() };
                 REQUIRE( length == 0 );
-			}
+             }
         }
 
         WHEN("An empty map is manually loaded") {
