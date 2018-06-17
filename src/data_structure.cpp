@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <string>
 #include "data_structure.hpp"
 
 using namespace SoftwareChallenge;
