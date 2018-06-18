@@ -15,14 +15,17 @@
 
 /**
 * @brief Get a more compact social network information
-* @param file_nane human-friendly input file name
+* @param argc number of commandline arguments
+* @param argv commandline arguments
 * @return false if error and its description, otherwise true and a summary report. As well, number of members in that social network
+*
+* If compact_file_name is provided, it'll try to store that compact version in that file.
 */
-std::tuple<bool, std::string, size_t, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> preprocess(const std::string& file_name);
+std::tuple<bool, std::string, bool, size_t, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> preprocess(int argc, char** argv);
 
 namespace SoftwareChallenge {
 
-	/**
+        /**
 	* class Collection 
 	* @brief Non-compact info for a member of the social network
 	*/
@@ -68,23 +71,23 @@ namespace SoftwareChallenge {
 		void reset();
 
         /** @return Number of relationships in the graph */
-        inline size_t relationships() const;
+        size_t relationships() const;
         /** @return Maximum number of friends for one member */
-		inline Member::size_type friendsMax() const;  
+        Member::size_type friendsMax() const;
 		/** @return Minimum number of friends for one member */
-		inline Member::size_type friendsMin() const;
+        Member::size_type friendsMin() const;
 		/** @return Maximum length of member name */
-		inline std::string::size_type nameMax() const;
+        std::string::size_type nameMax() const;
 		/** @return Minimum length of member name */
-		inline std::string::size_type nameMin() const; 
+        std::string::size_type nameMin() const;
 		/** @return Member with more friends */
-		inline std::string popularMax() const;	
+        std::string popularMax() const;
 		/** @return Member with fewer friends */
-		inline std::string popularMin() const;
+        std::string popularMin() const;
         /** @return Name Index mapping */
-        inline NameIndex nameIndex() const;
+        NameIndex nameIndex() const;
         /** @return Name Index mapping */
-        inline FriendGraph graph() const;
+        FriendGraph graph() const;
 
 		/**
 		* @brief Given an input file, feed our list of members 
@@ -99,6 +102,25 @@ namespace SoftwareChallenge {
 		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
 		*/
         std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
+
+        /**
+        * @brief Save to a file the compact version
+        * @param file_nane computer-friendly file name
+        * @return false if error and its description, otherwise true and a summary report
+        *
+        * Save all those bytes of NameIndex and FriendGraph structures in a row.
+        */
+        std::tuple<bool, std::string, IndexType, size_t, size_t> store(const std::string& file_name);
+
+        /**
+        * @brief Load from a file the compact version
+        * @param file_nane computer-friendly file name
+        * @return false if error and its description, otherwise true and a summary report. As well number of members
+        *
+        * Split all those bytes between NameIndex and FriendGraph structures in a row.
+        */
+        std::tuple<bool, std::string, IndexType, size_t, size_t> load(const std::string& file_name);
+
 	};
 	
 } // namespace

@@ -95,4 +95,124 @@ SCENARIO("Check how to compact/load data structures", "[structure]") {
             }
         }
    }
+
+   GIVEN("Friendship graph structure") {
+
+       FriendGraph friendGraph{};
+
+       WHEN("Empty array") {
+
+            friendGraph.clear();
+
+            THEN("Compact its contain must be just the amount needed for its length") {
+
+                std::vector<uint8_t> compact { friendGraph.compact() };
+
+                REQUIRE( compact.size() == sizeof(IndexType) );
+                IndexType length { *compact.data() };
+                REQUIRE( length == 0 );
+            }
+       }
+
+       WHEN("An empty array is manually loaded") {
+
+            friendGraph.clear();
+            friendGraph.emplace_back(std::vector<IndexType>{2,1});  // 0 -> 2,1 (popularty order)
+            friendGraph[0].resize(2);
+            REQUIRE(friendGraph[0].size() == 2);
+
+            friendGraph.emplace_back(std::vector<IndexType>{0});	// 1 -> 0
+            friendGraph[1].resize(1);
+            REQUIRE(friendGraph[1].size() == 1);
+
+            friendGraph.emplace_back(std::vector<IndexType>{0,3});	// 2 -> 0,3 (popularity order)
+            friendGraph[1].resize(2);
+            REQUIRE(friendGraph[2].size() == 2);
+
+            friendGraph.emplace_back(std::vector<IndexType>{2}); 	// 3 -> 2
+            friendGraph[1].resize(1);
+            REQUIRE(friendGraph[3].size() == 1);
+
+            size_t relations {0};
+            for(const auto& i : friendGraph ) { relations += i.size(); }
+            REQUIRE( relations == 6 );
+
+            THEN("Compact its contain must be the amount needed for its length and its payload") {
+
+                std::vector<uint8_t> compact { friendGraph.compact() };
+                REQUIRE( compact.size() == friendGraph.neededBytes() );
+                REQUIRE(
+                     friendGraph.neededBytes() ==
+                     ( sizeof(IndexType) + (4 * (sizeof(size_t) + sizeof(IndexType))) + (6 * (sizeof(IndexType))) )
+                );
+
+                // size
+                IndexType length { *compact.data() };
+                REQUIRE( length == 4 );
+
+                // offsets --> IndexType==4 bytes, size_t==8 bytes
+                // pointing to friends of 0
+                REQUIRE( static_cast<size_t>(*(compact.data() + 4 + 0*8)) == (4 + 4*8) );
+                // pointing to friends of 1
+                REQUIRE( static_cast<size_t>(*(compact.data() + 4 + 1*8)) == (4 + 4*8 + 3*4) );
+                // pointing to friends of 2
+                REQUIRE( static_cast<size_t>(*(compact.data() + 4 + 2*8)) == (4 + 4*8 + 3*4 + 2*4) );
+                // pointing to friends of 3
+                REQUIRE( static_cast<size_t>(*(compact.data() + 4 + 3*8)) == (4 + 4*8 + 3*4 + 2*4 + 3*4) );
+
+                // number of friends
+                // pointing to friends of 0 size=2
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8) ) == 2 );
+                // pointing to friends of 1 size=1
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4) ) == 1 );
+                // pointing to friends of 2 size=2
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 2*4) ) == 2 );
+                // pointing to friends of 3 size=1
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 2*4 + 3*4) ) == 1 );
+
+                // friends
+                // pointing to friends of 0 -> 2,1
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 4 + 0*4) ) == 2 );
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 4 + 1*4) ) == 1 );
+                // pointing to friends of 1 -> 0
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 4 + 0*4) ) == 0 );
+                // pointing to friends of 2 -> 0,3
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 2*4 + 4 + 0*4) ) == 0 );
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 2*4 + 4 + 1*4) ) == 3 );
+                // pointing to friends of 3 -> 2
+                REQUIRE( static_cast<IndexType>(*(compact.data() + 4 + 4*8 + 3*4 + 2*4 + 3*4 + 4 + 0*4) ) == 2 );
+            }
+        }
+
+        WHEN("An empty array is automatically loaded") {
+
+            friendGraph.clear();
+            friendGraph.emplace_back(std::vector<IndexType>{2,1});  // 0 -> 2,1 (popularty order)
+            friendGraph.emplace_back(std::vector<IndexType>{0});	// 1 -> 0
+            friendGraph.emplace_back(std::vector<IndexType>{0,3});	// 2 -> 0,3 (popularity order)
+            friendGraph.emplace_back(std::vector<IndexType>{2}); 	// 3 -> 2
+            std::vector<uint8_t> raw { friendGraph.compact() };
+            friendGraph.clear();
+            IndexType length { friendGraph.load(raw) };
+
+            THEN("Compact its contain must be the amount needed for its length and its payload") {
+                REQUIRE( length == 4 );
+                REQUIRE( friendGraph.size() == 4 );
+                REQUIRE( friendGraph[0][0] == 2 );
+                REQUIRE( friendGraph[0][1] == 1 );
+                REQUIRE( friendGraph[0].size() == 2 );
+                REQUIRE( friendGraph[0].capacity() == 2 );
+                REQUIRE( friendGraph[1][0] == 0 );
+                REQUIRE( friendGraph[1].size() == 1 );
+                REQUIRE( friendGraph[1].capacity() == 1 );
+                REQUIRE( friendGraph[2][0] == 0 );
+                REQUIRE( friendGraph[2][1] == 3 );
+                REQUIRE( friendGraph[2].size() == 2 );
+                REQUIRE( friendGraph[2].capacity() == 2 );
+                REQUIRE( friendGraph[3][0] == 2 );
+                REQUIRE( friendGraph[3].size() == 1 );
+                REQUIRE( friendGraph[3].capacity() == 1 );
+            }
+        }
+   }
 }

@@ -13,25 +13,57 @@
 #include <cctype>
 #include <cstring>
 #include "preprocess.hpp"
+#include "commandline.hpp"
+
+
+
+#include <iostream>
 
 using namespace SoftwareChallenge;
 
-std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> preprocess(const std::string& file_name)
+std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(int argc, char** argv)
 {
-	if (file_name.empty()) {
-        return{ false, "Empty file name", 0, NameIndex{}, FriendGraph{} };
+    // user input
+    auto[file_name, binary, compact_file_name, stats, generate] = commandline_arguments(argc, argv);
+
+    if (file_name.empty()) {
+        return{ false, "Empty file name", stats, 0, NameIndex{}, FriendGraph{} };
 	}
 
-	// this way all collection non-compact will be freed in a RAII way
-	Collection network;
+    // this way all collection non-compact will be freed in a RAII way
+    Collection network;
 
-	// process file
+    // No need of preprocessing
+    if( binary ) {
+
+        auto[ success, hint, number_of_members, name2index_length, FriendGraph_length ] = network.load(file_name);
+        if( ! success ) {
+            return{ false, hint, stats, 0, NameIndex{}, FriendGraph{} };
+        }
+
+        return { true, hint, false, number_of_members, network.nameIndex(), network.graph() };
+    }
+
+    // process file
 	if (auto[success, hint] = network.process(file_name); !success) {
-        return { success, hint, network.size(), NameIndex{}, FriendGraph{} };
+        return { false, hint, stats, network.size(), NameIndex{}, FriendGraph{} };
 	}
 
-	// compact info
-	return network.compact(); 
+    // compact that info
+    auto[success, hint, number_of_members, name2index, friendGraph] = network.compact();
+
+    // store compact version only if required
+    if ( success && generate && ! compact_file_name.empty() ) {
+
+        // try to store that compact info
+        if( auto[stored, issues, length, ni_length, fg_length ] = network.store(compact_file_name); !stored) {
+            return { false, issues, stats, number_of_members, name2index, friendGraph };
+        } else {
+            hint += " stored in file " + compact_file_name;
+        }
+    }
+
+    return { success, hint, stats, number_of_members, name2index, friendGraph };
 }
 
 void Collection::reset()
@@ -184,7 +216,7 @@ std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> Collection::compac
 
     // order friend sets from more popular to less one
     // this is going to take time in order to spare it once we only work with the compact version
-    // so hopefully it'll only be done once --> that means computer-friendly ;)
+    // so hopefully it'll only be done once:  that means computer-friendly ;)
     for (auto&& i : friendGraph) {
         std::sort( i.begin(), i.end(), [&](const auto& a, const auto& b) { return (friendGraph[a].size() > friendGraph[b].size()); });
     }
@@ -206,3 +238,134 @@ std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> Collection::compac
 	};
 }
 
+// RAII wrapper to open/close file
+struct RAII_binary {
+    std::ofstream file;
+    RAII_binary(const std::string& file_name) : file(file_name, std::fstream::binary) {}
+    ~RAII_binary() { if (file.is_open()) { file.close(); } }
+};
+
+std::tuple<bool, std::string, IndexType, size_t, size_t> Collection::store(const std::string& file_name)
+{
+    // basic checks
+    if(file_name.empty())  { return {false, "Empty file name", 0, 0, 0}; }
+    IndexType length { static_cast<IndexType>(size()) };
+    if(length == 0) { return {false, "Nothing to store", length, 0, 0}; }
+
+    // First compact that info
+    if(name2index.size() == 0 || friendGraph.size() == 0) {
+
+        if( auto[success, hint, ignore, dont_care, whatever] = compact(); !success) {
+            return { false, "Store failed due to " + hint, 0, 0, 0 };
+        }
+
+    }
+
+    // extra check
+    if( (name2index.size() != friendGraph.size()) || (name2index.size() != size()) ) {
+        return {false, "Mismatched NameIndex and FriendGraph structures", length, name2index.size(), friendGraph.size()};
+    }
+
+    // mainly for debugging and double checks
+    size_t name2index_length { 0 };
+    size_t friendGraph_length { 0 };
+
+    try {
+        RAII_binary raii(file_name.c_str());
+
+        // Number of members ---> FIRST ELEMENT (IndexType)
+        raii.file.write( reinterpret_cast<const char*>(&length), sizeof(IndexType) );
+
+        // NameIndex
+        auto compact_name2index { name2index.compact() };
+        name2index_length = compact_name2index.size();
+
+        // NameIndex size in bytes to be stored in that binary file ----> SECOND ELEMENT (size_t)
+        raii.file.write( reinterpret_cast<const char*>(&name2index_length), sizeof(size_t) );
+
+        // FriendGraph payload
+        auto compact_friendGraph { friendGraph.compact() };
+        friendGraph_length = compact_friendGraph.size();
+
+        // FriendGraph size in bytes to be stored in that binary file ----> THIRD ELEMENT (size_t)
+        raii.file.write( reinterpret_cast<const char*>(&friendGraph_length), sizeof(size_t) );
+
+        // write name2index payload -----> FOURTH ELEMENT ( n * (size_t + NameIndex) )
+        raii.file.write( reinterpret_cast<const char*>(compact_name2index.data()), name2index_length );
+
+        // write friendGraph payload -----> FIFTH ELEMENT ( n * (IndexType + different m * IndexType) )
+        raii.file.write( reinterpret_cast<const char*>(compact_friendGraph.data()), friendGraph_length);
+
+    }
+    catch (const std::ofstream::failure& e) {
+        return { false, e.what(), length, name2index_length, friendGraph_length };
+    }
+    catch (...) {
+        return { false, "Something went bananas with binary " + file_name, length, name2index_length, friendGraph_length };
+    }
+
+    return { true, "Stored compact format at " + file_name, length, name2index_length, friendGraph_length };
+}
+
+// RAII wrapper to open/close file
+struct RAII_input_binary {
+    std::ifstream file;
+    RAII_input_binary(const std::string& file_name) : file(file_name, std::fstream::binary) {}
+    ~RAII_input_binary() { if (file.is_open()) { file.close(); } }
+};
+
+std::tuple<bool, std::string, IndexType, size_t, size_t> Collection::load(const std::string& file_name)
+{
+    // number of members
+    IndexType length{0};
+
+    // size
+    size_t name2index_length {0};
+
+    // size
+    size_t friendGraph_length {0};
+
+    try {
+        RAII_input_binary raii(file_name.c_str());
+
+        // TODO: so weak sanity check, getting its file size with tellg()
+
+        // Number of members ---> FIRST ELEMENT (IndexType)
+        raii.file.read( reinterpret_cast<char*>(&length), sizeof(IndexType) );
+
+        // NameIndex size in bytes ---> SECOND ELEMENT (size_t)
+        raii.file.read( reinterpret_cast<char*>(&name2index_length), sizeof(size_t) );
+
+        // FriendGraph size in bytes to be stored in that binary file ----> THIRD ELEMENT (size_t)
+        raii.file.read( reinterpret_cast<char*>(&friendGraph_length), sizeof(size_t) );
+
+        // NameIndex payload  -----> FOURTH ELEMENT ( n * (size_t + NameIndex) )
+        std::vector<uint8_t> compact_name2index (name2index_length);
+        raii.file.read( reinterpret_cast<char*>(compact_name2index.data()), name2index_length );
+        IndexType name2index_expected_length = name2index.load(compact_name2index);
+
+        // extra check
+        if( length != name2index_expected_length  ) {
+            return { false, "Mismatch at NameIndex structure in binary file " + file_name, length, name2index_length, friendGraph_length };
+        }
+
+        // FindGraph payload   -----> FIFTH ELEMENT ( n * (IndexType + different m * IndexType) )
+        std::vector<uint8_t> compact_friendGraph (friendGraph_length);
+        raii.file.read( reinterpret_cast<char*>(compact_friendGraph.data()), friendGraph_length );
+        IndexType friendGraph_expected_length = friendGraph.load(compact_friendGraph);
+
+        // extra check
+        if( length != friendGraph_expected_length  ) {
+            return { false, "Mismatch at FriendGraph structure in binary file " + file_name, length, name2index_length, friendGraph_length };
+        }
+
+    }
+    catch (const std::ifstream::failure& e) {
+        return { false, e.what(), 0, name2index_length, friendGraph_length };
+    }
+    catch (...) {
+        return { false, "Something went bananas with binary " + file_name, length, name2index_length, friendGraph_length };
+    }
+
+    return { true, "Loaded binary data from " + file_name, length, name2index_length, friendGraph_length };
+}

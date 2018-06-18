@@ -19,4 +19,4 @@
 * There usually is some library in any organization, based on boost or getops (Unix), but some basic approach from Internet was followed
 * @see https://stackoverflow.com/questions/865668/how-to-parse-command-line-arguments-in-c
 */
-std::tuple<std::string, bool> commandline_arguments(int argc, char** argv);
+std::tuple<std::string, bool, std::string, bool, bool> commandline_arguments(int argc, char** argv);
