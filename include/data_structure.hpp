@@ -62,7 +62,7 @@ namespace SoftwareChallenge {
 		* @brief Raw size
 		* @return Number of bytes required for this map
 		*/
-        inline size_t neededBytes() const;
+       		size_t neededBytes() const;
 
 		/**
 		* @brief Index info 

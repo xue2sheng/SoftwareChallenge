@@ -75,7 +75,7 @@ IndexType NameIndex::load(std::vector<uint8_t>& raw)
             // every element is a pair name->index
             (sizeof(NameType) + sizeof(IndexType))
 	);
-    if( length != expected_length ) { return raw_size; }
+    if( static_cast<size_t>(length) != expected_length ) { return 0; }
 
     // clean current data to avoid messing about with stale info
     clear();

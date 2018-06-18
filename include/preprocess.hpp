@@ -31,76 +31,79 @@ namespace SoftwareChallenge {
 	*/
 	class Collection : public std::map<const std::string, Member> {
 
-        // Some redundant comapct info
-        /** @brief Name Index mapping */
-        NameIndex name2index {};
-        /** @brief friends graph */
-        FriendGraph friendGraph{};
-
-		// some stats
+       
+	// some stats
         /** @brief Number of relationships in the graph */
         size_t relations {0};
         /** @brief Maximum number of friends for one member */
-		Member::size_type friends_max {0};			
-		/** @brief Minimum number of friends for one member */
-		Member::size_type friends_min {INDEX_MAX};	
-		/** @brief Maximum length of member name */
-		std::string::size_type name_max {0};		
-		/** @brief Minimum length of member name */
-		std::string::size_type name_min {INDEX_MAX};
-		/** @brief Member with more friends */
-		std::string popular_max {""};				
-		/** @brief Member with fewer friends */
-		std::string popular_min {""};				
+	Member::size_type friends_max {0};			
+	/** @brief Minimum number of friends for one member */
+	Member::size_type friends_min {INDEX_MAX};	
+	/** @brief Maximum length of member name */
+	std::string::size_type name_max {0};		
+	/** @brief Minimum length of member name */
+	std::string::size_type name_min {INDEX_MAX};
+	/** @brief Member with more friends */
+	std::string popular_max {""};				
+	/** @brief Member with fewer friends */
+	std::string popular_min {""};				
 	
-		/**
-		* @brief Add a new member if needed 
-		* @param new_member add a new member 
-		*/
-		iterator add(const std::string& key);
+	/**
+	* @brief Add a new member if needed 
+	* @param new_member add a new member 
+	*/
+	iterator add(const std::string& key);
 
-		/**
-		* @brief Add a new couple of friends
-		* @param new_member add a new member 
-		*/
-		void add(const std::string& key, const std::string& new_friend);
+	/**
+	* @brief Add a new couple of friends
+	* @param new_member add a new member 
+	*/
+	void add(const std::string& key, const std::string& new_friend);
 
-	public:
+public:
 
-		/** @brief Reset to its initial values this collection */
-		void reset();
+ 	// This couple of item could have been declared as private
+	// Being some redundant compact info with a short live, this
+	// fact is not blocker.
+	//
+        /** @brief Name Index mapping */
+        NameIndex name2index{};
+        /** @brief friends graph */
+        FriendGraph friendGraph{};
+
+
+	/** @brief Reset to its initial values this collection */
+	void reset();
 
         /** @return Number of relationships in the graph */
         size_t relationships() const;
         /** @return Maximum number of friends for one member */
         Member::size_type friendsMax() const;
-		/** @return Minimum number of friends for one member */
+	/** @return Minimum number of friends for one member */
         Member::size_type friendsMin() const;
-		/** @return Maximum length of member name */
+	/** @return Maximum length of member name */
         std::string::size_type nameMax() const;
-		/** @return Minimum length of member name */
+	/** @return Minimum length of member name */
         std::string::size_type nameMin() const;
-		/** @return Member with more friends */
+	/** @return Member with more friends */
         std::string popularMax() const;
-		/** @return Member with fewer friends */
+	/** @return Member with fewer friends */
         std::string popularMin() const;
         /** @return Name Index mapping */
-        NameIndex nameIndex() const;
-        /** @return Name Index mapping */
-        FriendGraph graph() const;
 
-		/**
-		* @brief Given an input file, feed our list of members 
-		* @param file_nane human-friendly input file name
-		* @return false if error and its description, otherwise true and a summary report
-		*/
-		std::tuple<bool, std::string> process(const std::string& file_name);
 
-		/**
-		* @brief Given a collection, try to compact its information in a computer-friendly way 
-		* @param file_nane human-friendly input file name
-		* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
-		*/
+	/**
+	* @brief Given an input file, feed our list of members 
+	* @param file_nane human-friendly input file name
+	* @return false if error and its description, otherwise true and a summary report
+	*/
+	std::tuple<bool, std::string> process(const std::string& file_name);
+
+	/**
+	* @brief Given a collection, try to compact its information in a computer-friendly way 
+	* @param file_nane human-friendly input file name
+	* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
+	*/
         std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
 
         /**

@@ -41,7 +41,7 @@ std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(i
             return{ false, hint, stats, 0, NameIndex{}, FriendGraph{} };
         }
 
-        return { true, hint, false, number_of_members, network.nameIndex(), network.graph() };
+        return { true, hint, false, number_of_members, network.name2index, network.friendGraph };
     }
 
     // process file
@@ -72,15 +72,13 @@ void Collection::reset()
     friends_max = friends_min = name_max = name_min = 0; popular_max = popular_min = "";
 }
 
-inline size_t Collection::relationships() const { return relations; }
-inline Member::size_type Collection::friendsMax() const { return friends_max; }
-inline Member::size_type Collection::friendsMin() const { return friends_min; }
-inline std::string::size_type Collection::nameMax() const { return name_max; }
-inline std::string::size_type Collection::nameMin() const { return name_min; }
-inline std::string Collection::popularMax() const { return popular_max; }
-inline std::string Collection::popularMin() const { return popular_min; }
-inline NameIndex Collection::nameIndex() const { return name2index; }
-inline FriendGraph Collection::graph() const { return friendGraph; }
+size_t Collection::relationships() const { return relations; }
+Member::size_type Collection::friendsMax() const { return friends_max; }
+Member::size_type Collection::friendsMin() const { return friends_min; }
+std::string::size_type Collection::nameMax() const { return name_max; }
+std::string::size_type Collection::nameMin() const { return name_min; }
+std::string Collection::popularMax() const { return popular_max; }
+std::string Collection::popularMin() const { return popular_min; }
 
 Collection::iterator Collection::add(const std::string& key)
 {
