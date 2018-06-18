@@ -15,10 +15,6 @@
 #include "preprocess.hpp"
 #include "commandline.hpp"
 
-
-
-#include <iostream>
-
 using namespace SoftwareChallenge;
 
 std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(int argc, char** argv)

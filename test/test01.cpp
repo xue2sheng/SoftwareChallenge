@@ -11,7 +11,10 @@
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-#include "preprocess.hpp" 
+#include <cstring>
+#include "preprocess.hpp"
+
+#include <iostream>
 
 using namespace SoftwareChallenge;
 
@@ -134,8 +137,8 @@ SCENARIO("Process human-friendly inputs", "[file]") {
                REQUIRE(foundAbel == true);
                //REQUIRE( network.friendGraph[indexAbel].size() == 1);
 
-
             }
         }
+
    }
 }

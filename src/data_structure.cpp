@@ -13,9 +13,6 @@
 #include <string>
 #include "data_structure.hpp"
 
-
-#include <iostream>
-
 using namespace SoftwareChallenge;
 
 void Member::add(const IndexType& new_friend) { insert(new_friend); }

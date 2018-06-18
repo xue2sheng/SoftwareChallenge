@@ -15,7 +15,14 @@ configure_file(${data_path_in} ${data_path_cpp} @ONLY)
 
 # Compile objects just once if possible
 include_directories(${CMAKE_PROJECT_NAME}_object PRIVATE ${CMAKE_SOURCE_DIR}/include)
-add_library(${CMAKE_PROJECT_NAME}_object OBJECT "commandline.cpp" "preprocess.cpp" "data_structure.cpp" "version.cpp" "data_path.cpp")
+add_library(${CMAKE_PROJECT_NAME}_object OBJECT 
+	"commandline.cpp" 
+	"preprocess.cpp" 
+	"data_structure.cpp" 
+	"graph_algorithm.cpp"
+	"version.cpp" 
+	"data_path.cpp"
+)
 
 # Add source to this project's executable.
 include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
