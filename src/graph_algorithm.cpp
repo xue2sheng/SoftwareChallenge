@@ -76,27 +76,31 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     searchA.join();
     searchB.join();
 
-    // No friends of friends in common
-    if( (tiesB.getDistance() == INDEX_MAX) && (tiesA.getDistance() == INDEX_MAX) ) {
+    // distance
+    IndexType ties {0};
 
-        return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
-
-    }
-
+    // extra details to report
     std::stringstream ss;
-    ss << searchId;
 
     // One thread likely was stop before reaching its target so get the info from the one which hit its target
-    ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should suffice";
+    if( (visitedA[indexB] == INDEX_MAX) && (visitedB[indexA] == INDEX_MAX) ) {
+       ties = (tiesA.getDistance() + tiesB.getDistance());
+    } else {
+       ties = std::min(visitedA[indexB],visitedB[indexA]);
+    }
+    ss << searchId << "   " << ties << " should suffice  ";
 
+    // avoid to report ugly number
     if( visitedA[indexB] != INDEX_MAX ) {
         ss << "    threadA=" << visitedA[indexB];
     }
 
+    // avoid to report ugly number
     if( visitedB[indexA] != INDEX_MAX ) {
         ss << "    threadB=" << visitedB[indexA];
     }
 
+    // avoid to report ugly number
     std::string commonA;
     if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
         if( (tiesA.getDistance() != INDEX_MAX) || (tiesA.getCommon() != indexB) ) {
@@ -104,6 +108,7 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
         }
     }
 
+    // avoid to report ugly number
     std::string commonB;
     if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
          if( (tiesB.getDistance() != INDEX_MAX) || (tiesB.getCommon() != indexB) ) {
@@ -111,7 +116,14 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
          }
     }
 
-    return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
+    // Neitehr of two threads hit direclty its targets
+    if( (tiesB.getDistance() == INDEX_MAX) && (tiesA.getDistance() == INDEX_MAX) ) {
+
+        return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
+    }
+
+    // Common case
+    return { true, ss.str(), ties };
 }
 
 TiesBFS::TiesBFS(std::atomic<bool>& myDone_, std::atomic<bool>& othersDone_,
