@@ -14,7 +14,9 @@ set(data_path_cpp ${CMAKE_CURRENT_BINARY_DIR}/data_path.cpp)
 configure_file(${data_path_in} ${data_path_cpp} @ONLY)
 
 # pthreads doesn't make Windows happy
-SET(CMAKE_CXX_FLAGS -pthread)
+if(UNIX AND APPLE)
+	set(CMAKE_CXX_FLAGS -pthread)
+endif()
 
 # Compile objects just once if possible
 include_directories(${CMAKE_PROJECT_NAME}_object PRIVATE ${CMAKE_SOURCE_DIR}/include)

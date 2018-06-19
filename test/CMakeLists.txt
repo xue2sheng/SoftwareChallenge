@@ -4,7 +4,11 @@
 cmake_minimum_required (VERSION 3.10)
 
 # pthread doesn't make Windows happy
-SET(CMAKE_CXX_FLAGS -pthread)
+
+# pthreads doesn't make Windows happy
+if(UNIX AND APPLE)
+	set(CMAKE_CXX_FLAGS -pthread)
+endif()
 
 include_directories(test00 PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_executable(test00 $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "test00.cpp")
