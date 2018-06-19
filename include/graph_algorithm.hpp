@@ -37,7 +37,7 @@ std::tuple<bool, std::string, SoftwareChallenge::IndexType> searchFriends(const 
 namespace SoftwareChallenge {
 
 /**
-* @brief keep the visited memberlog in a way that several threads can cooperate
+* @brief keep the visited member log in a way that several threads can cooperate
 */
 typedef std::vector<std::atomic<IndexType>> Visited;
 
@@ -73,7 +73,7 @@ public:
   explicit TiesBFS(const FriendGraph& friendGraph, Visited& visitedMembers, const IndexType startPoint);
 
   /**
-   * @brief Typical Breadth First Search or BFS for a Graph in order to figure out the number of ties between two memberif any.
+   * @brief Typical Breadth First Search or BFS for a Graph in order to figure out the number of ties between two members if any.
    * @param start with a member that search.
   */
   void operator()();

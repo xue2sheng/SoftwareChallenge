@@ -94,7 +94,7 @@ IndexType NameIndex::load(std::vector<uint8_t>& raw)
 /*
 * 0) one IndexTyep (4 bytes) with the number of members (n)
 * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to
-* 2) n set of IndexType following the structrue:
+* 2) n set of IndexType following the structure:
 *   2a) one IndexType with the number of friends for this member (m)
 *   2b) m IndexType as friends indexes for this member
 */
@@ -108,7 +108,7 @@ size_t FriendGraph::neededBytes() const
 /*
 * 0) one IndexTyep (4 bytes) with the number of members (n)
 * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to
-* 2) n set of IndexType following the structrue:
+* 2) n set of IndexType following the structure:
 *   2a) one IndexType with the number of friends for this member (m)
 *   2b) m IndexType as friends indexes for this member
 */
@@ -138,7 +138,7 @@ std::vector<uint8_t> FriendGraph::compact() const
         // next element in 1)
         base += sizeof(size_t);
 
-        /*** 2) n set of IndexType following the structrue: ***/
+        /*** 2) n set of IndexType following the structure: ***/
 
         // 2a) one IndexType with the number of friends for this member (m)
         IndexType num = static_cast<IndexType>(i.size());
@@ -159,7 +159,7 @@ std::vector<uint8_t> FriendGraph::compact() const
 /*
 * 0) one IndexTyep (4 bytes) with the number of members (n)
 * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to
-* 2) n set of IndexType following the structrue:
+* 2) n set of IndexType following the structure:
 *   2a) one IndexType with the number of friends for this member (m)
 *   2b) m IndexType as friends indexes for this member
 */

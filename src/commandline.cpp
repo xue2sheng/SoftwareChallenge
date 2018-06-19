@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 #include <iterator>
+#include <cctype>
 #include "commandline.hpp"
 
 /**
@@ -62,7 +63,7 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
         std::cout << " -c <file_name>: Compact file name. If not provided, a defult one will be used ." << std::endl;
         std::cout << " -g --generate: Generate computer-friendly compact file name." << std::endl;
         std::cout << "                Required that input file name extension is .txt" << std::endl;
-        std::cout << "                This generation option prefents the graph search for number of ties." << std::endl;
+        std::cout << "                This generation option prevents the graph search for number of ties." << std::endl;
         std::cout << " -l <list of name pairs>: list of couples of members to process separated by commas." << std::endl;
         std::cout << "                          There must be even and -g option shouldn't be active." << std::endl;
         std::cout << std::endl;
@@ -103,7 +104,7 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
         file_name = data_path + "/SocialNetwork.bin";
     }
 
-    // is the input alreay in binary mode?
+    // is the input already in binary mode?
     // Then no need to preprocees anything
     bool binary{ isBinary(file_name) };
 
@@ -173,7 +174,7 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
             exit(1);
         }
 
-        // Out of lazziness, replace ',' to split that string
+        // Out of laziness, replace ',' to split that string
         std::replace(line.begin(), line.end(), ',', ' ');
 
         std::istringstream iss(line);

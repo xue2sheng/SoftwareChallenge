@@ -183,7 +183,7 @@ std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> Collection::compac
         return { false, "Nothing to compact", 0, name2index, friendGraph };
 	}
 
-    // reseve space to avoid vector resizing as much as possible
+    // reserve space to avoid vector resizing as much as possible
     friendGraph.resize(size());
 
 	for (const auto& item : *this) {

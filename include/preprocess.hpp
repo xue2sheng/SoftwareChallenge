@@ -15,8 +15,8 @@
 
 /**
 * @brief Get a more compact social network information
-* @param argc number of commandline arguments
-* @param argv commandline arguments
+* @param argc number of command line arguments
+* @param argv command line arguments
 * @return false if error and its description, otherwise true and a summary report. As well, number of members in that social network
 *
 * If compact_file_name is provided, it'll try to store that compact version in that file.

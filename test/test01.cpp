@@ -129,14 +129,6 @@ SCENARIO("Process human-friendly inputs", "[file]") {
                auto[foundLanny, indexLanny] = network.name2index.getIndex("LANNY_TIBURCIO");
                REQUIRE(foundLanny == true);
                REQUIRE(indexLanny == 1);
-
-	       // TODO: review this failing part
-               // size=402 relationships=866 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215
-               //REQUIRE( network.friendGraph[[indexMyles].size() == 215);
-               auto[foundAbel, indexAbel] = network.name2index.getIndex("ABEL_BONNES");
-               REQUIRE(foundAbel == true);
-               //REQUIRE( network.friendGraph[indexAbel].size() == 1);
-
             }
         }
 

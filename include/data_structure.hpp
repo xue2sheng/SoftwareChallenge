@@ -91,11 +91,11 @@ struct NameIndex : public std::map<std::string, IndexType> {
 
 /**
 * @class FriendGraph
-* @brief Keep friend relationshtip in a compact way
+* @brief Keep friend relationship in a compact way
 *
-* Using only idexes makes it easier to serialize/deserialize from/to hard disk/memory.
+* Using only indexes makes it easier to serialize/deserialize from/to hard disk/memory.
 *
-* A vector of vectors of indixes should siffice. Don't forget to ajust their capacity.
+* A vector of vectors of indexes should suffice. Don't forget to adjust their capacity.
 */
 struct FriendGraph : public std::vector<std::vector<IndexType>> {
 
@@ -116,14 +116,14 @@ struct FriendGraph : public std::vector<std::vector<IndexType>> {
    *
    * 0) one IndexTyep (4 bytes) with the number of members (n)
    * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to
-   * 2) n set of IndexType following the structrue:
+   * 2) n set of IndexType following the structure:
    *   2a) one IndexType with the number of friends for this member (m)
    *   2b) m IndexType as friends indexes for this member
    */
    std::vector<uint8_t> compact() const;
 
    /**
-    * @brief deserialize raw bytes into runable array
+    * @brief deserialize raw bytes into runnable array
     * @param raw input bytes
     * @return size stored in the raw data. It should match map size at the end of loading
    */
