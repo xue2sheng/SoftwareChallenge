@@ -87,7 +87,7 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     ss << searchId;
 
     // One thread likely was stop before reaching its target so get the info from the one which hit its target
-    ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should sufice";
+    ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should suffice";
 
     if( visitedA[indexB] != INDEX_MAX ) {
         ss << "    threadA=" << visitedA[indexB];
