@@ -21,21 +21,20 @@
 *
 * If compact_file_name is provided, it'll try to store that compact version in that file.
 */
-std::tuple<bool, std::string, bool, size_t, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> preprocess(int argc, char** argv);
+std::tuple<bool, std::string, bool, size_t, SoftwareChallenge::CoupleList, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> preprocess(int argc, char** argv);
 
 namespace SoftwareChallenge {
 
-        /**
-	* class Collection 
-	* @brief Non-compact info for a member of the social network
-	*/
-	class Collection : public std::map<const std::string, Member> {
-
+/**
+* @class Collection
+* @brief Non-compact info for a member of the social network
+*/
+class Collection : public std::map<const std::string, Member> {
        
 	// some stats
-        /** @brief Number of relationships in the graph */
-        size_t relations {0};
-        /** @brief Maximum number of friends for one member */
+    /** @brief Number of relationships in the graph */
+    size_t relations {0};
+    /** @brief Maximum number of friends for one member */
 	Member::size_type friends_max {0};			
 	/** @brief Minimum number of friends for one member */
 	Member::size_type friends_min {INDEX_MAX};	
@@ -66,31 +65,28 @@ public:
 	// Being some redundant compact info with a short live, this
 	// fact is not blocker.
 	//
-        /** @brief Name Index mapping */
-        NameIndex name2index{};
-        /** @brief friends graph */
-        FriendGraph friendGraph{};
-
+    /** @brief Name Index mapping */
+    NameIndex name2index{};
+    /** @brief friends graph */
+    FriendGraph friendGraph{};
 
 	/** @brief Reset to its initial values this collection */
 	void reset();
 
-        /** @return Number of relationships in the graph */
-        size_t relationships() const;
-        /** @return Maximum number of friends for one member */
-        Member::size_type friendsMax() const;
+    /** @return Number of relationships in the graph */
+    size_t relationships() const;
+    /** @return Maximum number of friends for one member */
+    Member::size_type friendsMax() const;
 	/** @return Minimum number of friends for one member */
-        Member::size_type friendsMin() const;
+    Member::size_type friendsMin() const;
 	/** @return Maximum length of member name */
-        std::string::size_type nameMax() const;
+    std::string::size_type nameMax() const;
 	/** @return Minimum length of member name */
-        std::string::size_type nameMin() const;
+    std::string::size_type nameMin() const;
 	/** @return Member with more friends */
-        std::string popularMax() const;
+    std::string popularMax() const;
 	/** @return Member with fewer friends */
-        std::string popularMin() const;
-        /** @return Name Index mapping */
-
+    std::string popularMin() const;
 
 	/**
 	* @brief Given an input file, feed our list of members 
@@ -104,27 +100,26 @@ public:
 	* @param file_nane human-friendly input file name
 	* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
 	*/
-        std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
+    std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
 
-        /**
-        * @brief Save to a file the compact version
-        * @param file_nane computer-friendly file name
-        * @return false if error and its description, otherwise true and a summary report
-        *
-        * Save all those bytes of NameIndex and FriendGraph structures in a row.
-        */
-        std::tuple<bool, std::string, IndexType, size_t, size_t> store(const std::string& file_name);
+    /**
+    * @brief Save to a file the compact version
+    * @param file_nane computer-friendly file name
+    * @return false if error and its description, otherwise true and a summary report
+    *
+    * Save all those bytes of NameIndex and FriendGraph structures in a row.
+    */
+    std::tuple<bool, std::string, IndexType, size_t, size_t> store(const std::string& file_name);
 
-        /**
-        * @brief Load from a file the compact version
-        * @param file_nane computer-friendly file name
-        * @return false if error and its description, otherwise true and a summary report. As well number of members
-        *
-        * Split all those bytes between NameIndex and FriendGraph structures in a row.
-        */
-        std::tuple<bool, std::string, IndexType, size_t, size_t> load(const std::string& file_name);
-
-	};
+    /**
+    * @brief Load from a file the compact version
+    * @param file_nane computer-friendly file name
+    * @return false if error and its description, otherwise true and a summary report. As well number of members
+    *
+    * Split all those bytes between NameIndex and FriendGraph structures in a row.
+    */
+    std::tuple<bool, std::string, IndexType, size_t, size_t> load(const std::string& file_name);
+};
 	
 } // namespace
 			

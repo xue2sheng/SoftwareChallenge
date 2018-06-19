@@ -9,6 +9,8 @@
 
 #include <tuple>
 #include <string>
+#include <vector>
+#include <utility>
 
 /**
 * @brief process user options for running the binary
@@ -19,4 +21,4 @@
 * There usually is some library in any organization, based on boost or getops (Unix), but some basic approach from Internet was followed
 * @see https://stackoverflow.com/questions/865668/how-to-parse-command-line-arguments-in-c
 */
-std::tuple<std::string, bool, std::string, bool, bool> commandline_arguments(int argc, char** argv);
+std::tuple< std::string, bool, std::string, bool, bool, std::vector<std::pair<std::string, std::string>>> commandline_arguments(int argc, char** argv);

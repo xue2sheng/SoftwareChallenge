@@ -17,13 +17,13 @@
 
 using namespace SoftwareChallenge;
 
-std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(int argc, char** argv)
+std::tuple<bool, std::string, bool, size_t, CoupleList, NameIndex, FriendGraph> preprocess(int argc, char** argv)
 {
     // user input
-    auto[file_name, binary, compact_file_name, stats, generate] = commandline_arguments(argc, argv);
+    auto[file_name, binary, compact_file_name, stats, generate, coupleList ] = commandline_arguments(argc, argv);
 
     if (file_name.empty()) {
-        return{ false, "Empty file name", stats, 0, NameIndex{}, FriendGraph{} };
+        return{ false, "Empty file name", stats, 0, coupleList, NameIndex{}, FriendGraph{} };
 	}
 
     // this way all collection non-compact will be freed in a RAII way
@@ -34,15 +34,15 @@ std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(i
 
         auto[ success, hint, number_of_members, name2index_length, FriendGraph_length ] = network.load(file_name);
         if( ! success ) {
-            return{ false, hint, stats, 0, NameIndex{}, FriendGraph{} };
+            return{ false, hint, stats, 0, coupleList, NameIndex{}, FriendGraph{} };
         }
 
-        return { true, hint, false, number_of_members, network.name2index, network.friendGraph };
+        return { true, hint, false, number_of_members, coupleList, network.name2index, network.friendGraph };
     }
 
     // process file
 	if (auto[success, hint] = network.process(file_name); !success) {
-        return { false, hint, stats, network.size(), NameIndex{}, FriendGraph{} };
+        return { false, hint, stats, network.size(), coupleList, NameIndex{}, FriendGraph{} };
 	}
 
     // compact that info
@@ -53,13 +53,13 @@ std::tuple<bool, std::string, bool, size_t, NameIndex, FriendGraph> preprocess(i
 
         // try to store that compact info
         if( auto[stored, issues, length, ni_length, fg_length ] = network.store(compact_file_name); !stored) {
-            return { false, issues, stats, number_of_members, name2index, friendGraph };
+            return { false, issues, stats, number_of_members, coupleList, name2index, friendGraph };
         } else {
             hint += " stored in file " + compact_file_name;
         }
     }
 
-    return { success, hint, stats, number_of_members, name2index, friendGraph };
+    return { success, hint, stats, number_of_members, coupleList, name2index, friendGraph };
 }
 
 void Collection::reset()
@@ -139,7 +139,6 @@ std::tuple<bool, std::string> Collection::process(const std::string& file_name)
 			if (pos == std::string::npos) { return { false, "Some line missed required comma" }; }
 
 			key = line.substr(0, pos);
-			//if (key.empty()) { continue; }
 			if (key.empty()) { return { false, "Empty key name" }; }
 
 			line.erase(0, pos + 1); // 1 == length of ","
