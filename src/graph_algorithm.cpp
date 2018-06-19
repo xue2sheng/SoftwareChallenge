@@ -31,19 +31,19 @@ std::tuple<bool, std::string, IndexType, SoftwareChallenge::NameIndex, SoftwareC
 std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, const std::string& B, const NameIndex& name2index, const FriendGraph& friendGraph)
 {
     if( A == B ) {
-        return { true, A + " You're supposed to be friend of yourself", 0 };
+        return { true, A + " You're supposed to be friend of yourself", INDEX_MAX };
     }
 
     auto length { friendGraph.size() };
     auto num { name2index.size() };
 
-    if( (length == 0) || (num == 0) ) { return { false, "Empty graph", 0 }; }
-    if( length != num ) { return { false, "Mismatched NamIndex and FriendGraph structures", 0}; }
+    if( (length == 0) || (num == 0) ) { return { false, "Empty graph", INDEX_MAX }; }
+    if( length != num ) { return { false, "Mismatched NamIndex and FriendGraph structures", INDEX_MAX}; }
 
     auto [foundA, indexA] = name2index.getIndex(A);
-    if( !foundA ) { return { false, "Not found A member in this social network", 0 }; }
+    if( !foundA ) { return { false, "Not found " + A + " member in this social network", INDEX_MAX }; }
     auto [foundB, indexB] = name2index.getIndex(B);
-    if( !foundB ) { return { false, "Not found B member in this social network", 0 }; }
+    if( !foundB ) { return { false, "Not found " + B + " member in this social network", INDEX_MAX }; }
 
     // for debugging
     std::string searchId { A + "[" + std::to_string(indexA) + "]<-->" + B + "[" + std::to_string(indexB) + "]" };
@@ -76,41 +76,42 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     searchA.join();
     searchB.join();
 
-    if( (tiesB.getDistance() == tiesA.getDistance()) && (tiesA.getDistance() == INDEX_MAX) ) {
+    // No friends of friends in common
+    if( (tiesB.getDistance() == INDEX_MAX) && (tiesA.getDistance() == INDEX_MAX) ) {
 
         return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
 
-    } else {
-
-        std::stringstream ss;
-        ss << searchId;
-        ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should sufice";
-        ss << "    threadA=" << visitedA[indexB] << " threadB=" << visitedB[indexA];
-
-        std::string commonA;
-        if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
-            if( (tiesA.getDistance() != INDEX_MAX) || (tiesA.getCommon() != indexB) ) {
-                ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
-            }
-        }
-
-        std::string commonB;
-        if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
-            if( (tiesB.getDistance() != INDEX_MAX) || (tiesB.getCommon() != indexB) ) {
-                ss <<  " commonA=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
-            }
-        }
-
-        if( (visitedA[indexB] == 0) && (visitedB[indexA] != 0) ) {
-            return { true, ss.str(), visitedB[indexA] };
-        }
-
-        if( (visitedA[indexB] != 0) && (visitedB[indexA] == 0) ) {
-            return { true, ss.str(), visitedA[indexB] };
-        }
-
-        return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
     }
+
+    std::stringstream ss;
+    ss << searchId;
+
+    // One thread likely was stop before reaching its target so get the info from the one which hit its target
+    ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should sufice";
+
+    if( visitedA[indexB] != INDEX_MAX ) {
+        ss << "    threadA=" << visitedA[indexB];
+    }
+
+    if( visitedB[indexA] != INDEX_MAX ) {
+        ss << "    threadB=" << visitedB[indexA];
+    }
+
+    std::string commonA;
+    if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
+        if( (tiesA.getDistance() != INDEX_MAX) || (tiesA.getCommon() != indexB) ) {
+             ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
+        }
+    }
+
+    std::string commonB;
+    if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
+         if( (tiesB.getDistance() != INDEX_MAX) || (tiesB.getCommon() != indexB) ) {
+             ss <<  " commonB=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
+         }
+    }
+
+    return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
 }
 
 TiesBFS::TiesBFS(std::atomic<bool>& myDone_, std::atomic<bool>& othersDone_,
@@ -163,8 +164,8 @@ void TiesBFS::operator()()
              // done with this thread
              myDone.store(true);
 
-             // warn the other thread about the distance
-             othersVisited[start] = next.second;
+             // warn the other thread in a way that let us debug later what thread hit the target first
+             othersVisited[start] = INDEX_MAX;
 
              // done!
              break;
