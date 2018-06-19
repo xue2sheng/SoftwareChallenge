@@ -4,8 +4,14 @@
 * @date June 2018
 * @brief Silly process to check it out ideas before writing down proper unit tests.
 *
-* Pay attention to the fact that some external defined constant for the  version number is used. 
-* 
+* If you launch this program from its building folder, the default values should be good enough:
+*
+*    src/SoftwareChallenge
+*
+* Anyway, have a lookk to its help as usual:
+*
+*    src/SoftwareChallenge --help
+*
 * @see https://github.com/xue2sheng/SoftwareChallenge/blob/master/README.md
 */
 
@@ -40,9 +46,13 @@ int main(int argc, char** argv)
             ++result; // means no success in the end
             continue; // process all searches
         }
-        std::cout << hint.c_str() << std::endl;
+        std::cout << hint.c_str() << std::endl << std::endl << ties << " ties should suffice" << std::endl << std::endl;
     }
 
     // exit with proper code ==> good for possible external scripts by our DevOps fellas
     return result;
 }
+
+// src/SoftwareChallenge -s -g -f ../data/SocialNetwork.txt ../data/SocialNetwork.bin
+// Number of members in that social network: 82168
+// size=82168 relationships=1008460 name_min=6 name_max=24 popular_min=AARON_BOUSMAN friends_min=1 popular_max=CLIFTON_TIMMIS friends_max=2552 stored in file /home/user/Code/SoftwareChallenge/build/SocialNetwork.bin

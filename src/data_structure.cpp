@@ -31,6 +31,13 @@ std::tuple<bool, IndexType> NameIndex::getIndex(const std::string& name) const
 	return { true, found->second };
 }
 
+// slow. It's only used by debugging stuff
+std::tuple<bool,std::string> NameIndex::getName(const IndexType index) const
+{
+     for(const auto& i : (*this)) { if( (i.second) == index ) { return { true, i.first }; } }
+     return { false, ""};
+}
+
 std::vector<uint8_t> NameIndex::compact() const
 {
     // reserve only that needed room

@@ -76,6 +76,12 @@ struct NameIndex : public std::map<std::string, IndexType> {
     std::tuple<bool,IndexType> getIndex(const std::string& name) const;
 
     /**
+     * @brief Name info
+     * @return Get name if index exists
+     */
+    std::tuple<bool,std::string> getName(const IndexType index) const;
+
+    /**
     * @brief serialize useful info into its raw bytes
     * @return Info in raw bytes
     */

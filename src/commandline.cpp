@@ -97,11 +97,11 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
 
         // size=402 relationships=866 name_min=6 name_max=20 popular_min=ABEL_BONNES friends_min=1 popular_max=MYLES_JEFFCOAT friends_max=215
         // file_name = data_path + "/test01.txt";
-        // file_name = data_path + "/test01.bin";
 
-        // size=82168 relationships=1008460 name_min=6 name_max=24 popular_min=AARON_BOUSMAN friends_min=1 popular_max=CLIFTON_TIMMIS friends_max=2552
-        //file_name = data_path + "/SocialNetwork.txt";
-        file_name = data_path + "/SocialNetwork.bin";
+        // Searching for default possible friends A = STACEY_STRIMPLE, B = RICH_OMLI
+        // Number of members in that social network: 82168
+        // STACEY_STRIMPLE[56069]<-->RICH_OMLI[79562] Temporary thoughts: threadA=54724 threadB=80
+        file_name = data_path + "/SocialNetwork.txt";
     }
 
     // is the input already in binary mode?

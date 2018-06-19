@@ -1,5 +1,5 @@
 /**
-* @file test03.cpp 
+* @file test04.cpp 
 * @author Andres Sevillano 
 * @date June 2018
 * @brief Some basic tests on how to work with the generated graph.
@@ -13,26 +13,27 @@
 #include "catch.hpp"
 #include "graph_algorithm.hpp"
 
+// src/SoftwareChallenge -s -g -f ../data/test04.txt -c ../data/test04.bin
+// Number of members in that social network: 4
+// size=4 relationships=6 name_min=1 name_max=1 popular_min=A friends_min=1 popular_max=B friends_max=2 stored in file ../data/test04.bin
+
 using namespace SoftwareChallenge;
 
 // src/SoftwareChallenge -g -s -f ../data/test03.txt -c ../data/test03.bin
-// Number of members in that social network: 3
-// size=3 relationships=4 name_min=1 name_max=1 popular_min=A friends_min=1 popular_max=B friends_max=2 stored in file ../data/test03.bin
+// Number of members in that social network: 4
+// size=4 relationships=4 name_min=1 name_max=1 popular_min=A friends_min=1 popular_max=A friends_max=1 stored in file ../data/test04.bin
 /*
 
 A,B
-B,A
-B,C
-C,B
+C,D
 
 0,1
-1,0
-1,2
-2,1
+2,3
 
 0->1
-1->0,2 or 1->2,0
-2->1
+1->0
+2->3
+3->2
 
 */
 SCENARIO("Process computer-friendly inputs", "[binary]") {
@@ -55,17 +56,45 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
                 REQUIRE(name2index["A"] == 0);
                 REQUIRE(name2index["B"] == 1);
                 REQUIRE(name2index["C"] == 2);
+                REQUIRE(name2index["D"] == 3);
 
                 REQUIRE(friendGraph[0].size() == 1);
-                REQUIRE(friendGraph[1].size() == 2);
+                REQUIRE(friendGraph[1].size() == 1);
                 REQUIRE(friendGraph[2].size() == 1);
+                REQUIRE(friendGraph[3].size() == 1);
 
                 REQUIRE(friendGraph[0][0] == 1);
-                bool check = (friendGraph[1][0] == 0 && friendGraph[1][1] == 2) || (friendGraph[1][0] == 2 && friendGraph[1][1] == 0);
-                REQUIRE( check == true );
-                REQUIRE(friendGraph[2][0] == 1);
+                REQUIRE(friendGraph[1][0] == 0);
+                REQUIRE(friendGraph[2][0] == 3);
+                REQUIRE(friendGraph[3][0] == 2);
             }
 
+    }
+
+    WHEN("Check direct frieds") {
+
+            auto[ successAB, hintAB, tiesAB ] = searchFriends("A","B", name2index, friendGraph);
+            auto[ successCD, hintCD, tiesCD ] = searchFriends("C","D", name2index, friendGraph);
+
+            THEN("Must be marked as direct friends") {
+                REQUIRE( successAB == true );
+                REQUIRE( tiesAB == 0 );
+                REQUIRE( hintAB == "A[0]<-->B[1] They are direct friends" );
+                REQUIRE( successCD == true );
+                REQUIRE( tiesCD == 0 );
+                REQUIRE( hintCD == "C[2]<-->D[3] They are direct friends" );
+            }
+    }
+
+    WHEN("Launch a typcial search that should failed") {
+
+            auto[ success, hint, ties ] = searchFriends("A","D", name2index, friendGraph);
+
+            THEN("Must have the correct distance") {
+
+                REQUIRE( success == false );
+                //REQUIRE( ties == 1 );
+            }
     }
 
     WHEN("Check direct frieds") {

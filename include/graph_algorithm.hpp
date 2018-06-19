@@ -39,13 +39,18 @@ namespace SoftwareChallenge {
 /**
 * @brief keep the visited member log in a way that several threads can cooperate
 */
-typedef std::vector<std::atomic<bool>> Visited;
+typedef std::vector<std::atomic<IndexType>> Visited;
 
 /**
 * @class TiesBFS
 * @brief Bare-bones C++ functor in order not to pass too many arguments to its main Breadth First Search method.
 */
 class TiesBFS {
+
+  /**
+   * @brief target to search for
+   */
+  const IndexType target {0}; // invalid value
 
   /**
   * @brief graph information of that social network
@@ -75,7 +80,7 @@ class TiesBFS {
   /**
    * @brief distance walked until finding some visited from the other thread
    */
-  IndexType distance {0}; // invalid value
+  IndexType distance {INDEX_MAX}; // invalid value
 
   /**
    * @brief common friend, just for debugging
@@ -86,12 +91,13 @@ public:
 
   /**
    * @brief Bind external information through its constructor
+   * @param targetMember to look for.
    * @param friendGRraph social network info.
    * @param visitedMembers keeps a log of already processes friends
    * @param startPoint to kick off the search
    * @param threadId for debugging
    */
-  explicit TiesBFS(const FriendGraph& friendGraph, Visited& mine, Visited& others, const IndexType startPoint, const std::string& threadId);
+  explicit TiesBFS(const IndexType targetMember, const FriendGraph& friendGraph, Visited& mine, Visited& others, const IndexType startPoint, const std::string& threadId);
 
   /**
    * @brief distance walked by this thread
