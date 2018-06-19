@@ -16,6 +16,20 @@ Double check that binary was generated without strange dependencies with **dumpb
 
 	dumpbin .\src\Release\*.exe
 
+For exemple, on some Windows 10:
+
+	Microsoft (R) COFF/PE Dumper Version 14.14.26430.0
+	Copyright (C) Microsoft Corporation.  All rights reserved.
+	Dump of file .\build\src\Release\SoftwareChallenge.exe
+	File Type: EXECUTABLE IMAGE
+	  Summary
+		1000 .data
+		2000 .pdata
+		8000 .rdata
+		1000 .reloc
+		1000 .rsrc
+	       14000 .text
+
 Launching that binary from that **build** directory:
 
 	.\src\Release\*.exe
