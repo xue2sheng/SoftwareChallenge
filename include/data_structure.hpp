@@ -100,6 +100,11 @@ struct NameIndex : public std::map<std::string, IndexType> {
 struct FriendGraph : public std::vector<std::vector<IndexType>> {
 
    /**
+    * @brief are we friends?
+    */
+   bool areFriends(const IndexType A, const IndexType B) const;
+
+   /**
    * @brief Raw size
    * @return Number of bytes required for this array
    */

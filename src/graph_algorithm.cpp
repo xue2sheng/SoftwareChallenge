@@ -12,13 +12,24 @@
 #include <string>
 #include <queue>
 #include <thread>
+#include <utility>
 
 #include "graph_algorithm.hpp"
 #include "preprocess.hpp"
 
 
-/******/
+/**** slow thread debug ****/
 #include <iostream>
+#include <mutex>
+std::mutex m;
+void trace(const std::string& threadId, const std::string& message) {
+    std::lock_guard<std::mutex> lock(m);
+    std::cout << threadId << ": " << message << std::endl;
+}
+void trace(const std::string& threadId, const long i) {
+    std::lock_guard<std::mutex> lock(m);
+    std::cout << threadId << ": " << i << std::endl;
+}
 
 using namespace SoftwareChallenge;
 
@@ -46,50 +57,86 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     // for debugging
     std::string searchId { A + "[" + std::to_string(indexA) + "]<-->" + B + "[" + std::to_string(indexB) + "]" };
 
+    // Are direct friends?
+    if( friendGraph.areFriends(indexA, indexB) )
+    {
+        return { true, searchId + " They are direct friends", 0 };
+    }
+
     // avoid cycles in those searchs
-    Visited visited(length);
-    for(auto&& i : visited) { i.store(false); } // just in case its default value it's not false
+    Visited visitedA(length);
+    for(auto&& i : visitedA) { i.store(false); } // just in case its default value it's not false
+    Visited visitedB(length);
+    for(auto&& i : visitedB) { i.store(false); } // just in case its default value it's not false
 
     // Being friendships bidirectional, we'd better launch two concurrent search from each side and meet in the middle
-    TiesBFS tiesA {friendGraph, visited, indexA};
-    TiesBFS tiesB {friendGraph, visited, indexB};
+    TiesBFS tiesA {friendGraph, visitedA, visitedB, indexA, "A"};
+    TiesBFS tiesB {friendGraph, visitedB, visitedA, indexB, "B"};
 
     // launch one search
     std::thread searchA(std::ref(tiesA));
+    std::thread searchB(std::ref(tiesB));
     searchA.join();
+    searchB.join();
+
+    /***** debuggin *****/
+    std::cout << "----- search A -----" << tiesA.getCommon() << "[" << tiesA.getDistance() << "]" << std::endl;
+    std::cout << "----- search B -----" << tiesB.getCommon() << "[" << tiesB.getDistance() << "]" << std::endl;
+    std::cout << "----- " << tiesA.getDistance() << " + " << tiesB.getDistance() << " = " << (tiesA.getDistance() + tiesB.getDistance()) << std::endl;
 
     return { false, searchId + " Not implemented search yet", 0 };
 }
 
-TiesBFS::TiesBFS(const FriendGraph& friendGraph, Visited& visitedMembers, const IndexType startPoint)
-    : graph{friendGraph}, visited{visitedMembers}, start{startPoint} {}
+TiesBFS::TiesBFS(const FriendGraph& friendGraph, Visited& mine, Visited& others,
+                 const IndexType startPoint, const std::string& threadId_)
+    : graph{friendGraph}, myVisited{mine}, othersVisited{others},
+      start{startPoint}, threadId{threadId_}, distance{0}, common{INDEX_MAX}
+{}
+
+IndexType TiesBFS::getDistance() const { return distance; };
+IndexType TiesBFS::getCommon() const { return common; };
 
 void TiesBFS::operator()()
 {
      // Typical queue for BFS algorithms
-     std::queue<IndexType> queue;
+     std::queue<std::pair<IndexType, IndexType>> queue;
+
+     // number of steps
+     IndexType step {0};
 
      // Get ready for the initial one
-     visited[start].store(true);
-     queue.push(start);
+     myVisited[start].store(true);
+     queue.emplace(start, step);
 
      // take a walk
-     std::cout << "Walk" << std::endl;
      while( ! queue.empty() ) {
 
          // get the next one
          auto next { queue.front() };
-         std::cout << next << " ";
          queue.pop();
 
+         // common friend or reach the oher side???
+         if( othersVisited[next.first].load() ) {
+            trace(threadId, "reached other or just some common " + std::to_string(next.first) + " queued as " + std::to_string(next.second));
+
+            // needed that initial distance be INDEX_MAX
+            if( (distance == 0) || (next.second < distance) ) { common = next.first; distance = next.second; }
+
+            //break; // exit this thread
+         }
+
+         trace(threadId, "pop " + std::to_string(next.first) + "[" + std::to_string(step) + "]");
+         step++;
+
          // go through all her/his friends
-         for(const auto& i : graph[next]) {
-             if( ! visited[i].load() ) {
-                 visited[i].store(true);
-                 std::cout << i << std::endl;
-                 queue.push(i);
+         for(const auto& i : graph[next.first]) {
+
+             // keep on searching
+             if( ! myVisited[i].load() ) {
+                 myVisited[i].store(true);
+                 trace(threadId, ">>> " + std::to_string(i) + "<" + std::to_string(step) + ">");
+                 queue.emplace(i, step);
              }
          }
      } // while
-     std::cout << std::endl;
 }

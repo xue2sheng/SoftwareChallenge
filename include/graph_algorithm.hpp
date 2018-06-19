@@ -55,12 +55,32 @@ class TiesBFS {
   /**
   * @brief visited log in order to avoid cycles in our search
   */
-  Visited& visited;
+  Visited& myVisited;
+
+  /**
+  * @brief The other thread should be doing the same
+  */
+  Visited& othersVisited;
 
   /**
    * @bried start point of our search.
    */
   const IndexType start {0};
+
+  /**
+   * @brief threadId for debugging
+   */
+  const std::string threadId;
+
+  /**
+   * @brief distance walked until finding some visited from the other thread
+   */
+  IndexType distance {0}; // invalid value
+
+  /**
+   * @brief common friend, just for debugging
+   */
+  IndexType common {INDEX_MAX}; // invalid value
 
 public:
 
@@ -69,8 +89,19 @@ public:
    * @param friendGRraph social network info.
    * @param visitedMembers keeps a log of already processes friends
    * @param startPoint to kick off the search
+   * @param threadId for debugging
    */
-  explicit TiesBFS(const FriendGraph& friendGraph, Visited& visitedMembers, const IndexType startPoint);
+  explicit TiesBFS(const FriendGraph& friendGraph, Visited& mine, Visited& others, const IndexType startPoint, const std::string& threadId);
+
+  /**
+   * @brief distance walked by this thread
+   */
+  IndexType getDistance() const;
+
+  /**
+   * @brief Common friend
+   */
+  IndexType getCommon() const;
 
   /**
    * @brief Typical Breadth First Search or BFS for a Graph in order to figure out the number of ties between two members if any.

@@ -91,6 +91,16 @@ IndexType NameIndex::load(std::vector<uint8_t>& raw)
     return length;
 }
 
+bool FriendGraph::areFriends(const IndexType A, const IndexType B) const
+{
+    size_t length {size()};
+    if( (length == 0) || (A >= length) || (B >= length) ) { return false; }
+
+    // alias
+    auto const& setA { operator[](A) };
+    return (setA.end() != std::find(setA.begin(), setA.end(), B));
+}
+
 /*
 * 0) one IndexTyep (4 bytes) with the number of members (n)
 * 1) n size_t (8 bytes each) for pointing inside this uint8_t* to

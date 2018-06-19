@@ -59,7 +59,6 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
                 REQUIRE(friendGraph[0].size() == 1);
                 REQUIRE(friendGraph[1].size() == 2);
                 REQUIRE(friendGraph[2].size() == 1);
-		
 
                 REQUIRE(friendGraph[0][0] == 1);
                 bool check = (friendGraph[1][0] == 0 && friendGraph[1][1] == 2) || (friendGraph[1][0] == 2 && friendGraph[1][1] == 0);
@@ -69,11 +68,26 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
 
     }
 
+    WHEN("Check direct frieds") {
+
+            auto[ successAB, hintAB, tiesAB ] = searchFriends("A","B", name2index, friendGraph);
+            auto[ successBC, hintBC, tiesBC ] = searchFriends("B","C", name2index, friendGraph);
+
+            THEN("Must be marked as direct friends") {
+                REQUIRE( successAB == true );
+                REQUIRE( tiesAB == 0 );
+                REQUIRE( hintAB == "A[0]<-->B[1] They are direct friends" );
+                REQUIRE( successBC == true );
+                REQUIRE( tiesBC == 0 );
+                REQUIRE( hintBC == "B[1]<-->C[2] They are direct friends" );
+            }
+    }
+
     WHEN("Launch a typcial search") {
 
             auto[ success, hint, ties ] = searchFriends("A","C", name2index, friendGraph);
 
-            THEN("Compact information in a computer-friendly way") {
+            THEN("Must have the correct distance") {
 
                 REQUIRE( success == false );
                 //REQUIRE( ties == 1 );
