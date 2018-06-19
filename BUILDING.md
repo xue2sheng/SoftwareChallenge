@@ -60,6 +60,12 @@ Double check that binary was generated without strange dependencies with **otool
 
 	otool -L `file src/* | grep executable | sed "s/^\(.*\):.*$/\1/g"`
 
+For example, in one High Sierra box:
+
+	src/SoftwareChallenge:
+		/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.0)
+		/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.50.4)
+
 Launchng that binary from that **build** directory:
 
 	echo `file src/* | grep executable | sed "s/^\(.*\):.*$/\1/g"` | bash
