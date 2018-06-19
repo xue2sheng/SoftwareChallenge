@@ -41,7 +41,7 @@ std::tuple<bool, std::string, IndexType, SoftwareChallenge::NameIndex, SoftwareC
 std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, const std::string& B, const NameIndex& name2index, const FriendGraph& friendGraph)
 {
     if( A == B ) {
-        return { true, A + ", you're supposed to be friend of yourself, don't care to what social network you belong to", 0 };
+        return { true, A + " You're supposed to be friend of yourself", 0 };
     }
 
     auto length { friendGraph.size() };
@@ -80,28 +80,29 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     searchA.join();
     searchB.join();
 
-    /***** debuggin *****/
-//    if( true ) {
- //       std::cout << "----- search A -----" << tiesA.getCommon() << "[" << tiesA.getDistance() << "] ==> " << visitedB[tiesA.getCommon()] << std::endl;
-  //      std::cout << "----- search B -----" << tiesB.getCommon() << "[" << tiesB.getDistance() << "] ==> " << visitedA[tiesB.getCommon()] << std::endl;
-   //     std::cout << "----- visited ------ <" << visitedA[indexB] << "," << visitedB[indexA] << ">" << std::endl;
-    //}
+    if( (tiesB.getDistance() == tiesA.getDistance()) && (tiesA.getDistance() == INDEX_MAX) ) {
 
-    std::stringstream ss;
-    ss << searchId;
-    ss << " threadA=" << visitedA[indexB] << " threadB=" << visitedB[indexA] << " min=" << std::min(visitedA[indexB],visitedB[indexA]);
+        return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
 
-    std::string commonA;
-    if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
+    } else {
+
+        std::stringstream ss;
+        ss << searchId;
+        ss << "    " << std::min(visitedA[indexB],visitedB[indexA]) << " ties should sufice";
+        ss << "    threadA=" << visitedA[indexB] << " threadB=" << visitedB[indexA];
+
+        std::string commonA;
+        if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
         ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
-    }
+        }
 
-    std::string commonB;
-    if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
+        std::string commonB;
+        if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
         ss << " commonB=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
-    }
+        }
 
-    return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
+        return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
+    }
 }
 
 TiesBFS::TiesBFS(const IndexType targetPoint, const FriendGraph& friendGraph, Visited& mine, Visited& others,

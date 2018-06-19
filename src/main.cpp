@@ -46,7 +46,7 @@ int main(int argc, char** argv)
             ++result; // means no success in the end
             continue; // process all searches
         }
-        std::cout << hint.c_str() << std::endl << std::endl << ties << " ties should suffice" << std::endl << std::endl;
+        std::cout << hint.c_str() << std::endl;
     }
 
     // exit with proper code ==> good for possible external scripts by our DevOps fellas

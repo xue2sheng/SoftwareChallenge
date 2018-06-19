@@ -54,15 +54,15 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
 	if (cmdOptionExists(argv, argv + argc, "-h") || cmdOptionExists(argv, argv + argc, "--help")) {
 		std::cout << std::endl << "Software Challenge" << std::endl << std::endl;
 
-		std::cout << " -h --help: This help information." << std::endl;
-        std::cout << " -v --version: Binary version to match Doxygen configuration one." << std::endl;
-        std::cout << " -d --default: Default paths and files." << std::endl;
-        std::cout << " -s --stats: Some extra stats on human-friendly input file." << std::endl;
+        std::cout << " -h --help: This help information." << std::endl << std::endl;
+        std::cout << " -v --version: Binary version to match Doxygen configuration one." << std::endl << std::endl;
+        std::cout << " -d --default: Default paths and files." << std::endl << std::endl;
+        std::cout << " -s --stats: Some extra stats on human-friendly input file." << std::endl << std::endl;
         std::cout << " -f <file_name>: Input file name. If not provided, a default one will be used." << std::endl;
-        std::cout << "                 Requires an extension .txt for text files and .bin for binaries." << std::endl;
+        std::cout << "                 Requires an extension .txt for text files and .bin for binaries." << std::endl << std::endl;
         std::cout << " -c <file_name>: Compact file name. If not provided, a defult one will be used ." << std::endl;
         std::cout << " -g --generate: Generate computer-friendly compact file name." << std::endl;
-        std::cout << "                Required that input file name extension is .txt" << std::endl;
+        std::cout << "                Required that input file name extension is .txt" << std::endl << std::endl;
         std::cout << "                This generation option prevents the graph search for number of ties." << std::endl;
         std::cout << " -l <list of name pairs>: list of couples of members to process separated by commas." << std::endl;
         std::cout << "                          There must be even and -g option shouldn't be active." << std::endl;
