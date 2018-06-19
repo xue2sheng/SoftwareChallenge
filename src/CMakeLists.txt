@@ -13,6 +13,9 @@ set(data_path_in ${CMAKE_CURRENT_SOURCE_DIR}/data_path.in)
 set(data_path_cpp ${CMAKE_CURRENT_BINARY_DIR}/data_path.cpp)
 configure_file(${data_path_in} ${data_path_cpp} @ONLY)
 
+# pthreads doesn't make Windows happy
+SET(CMAKE_CXX_FLAGS -pthread)
+
 # Compile objects just once if possible
 include_directories(${CMAKE_PROJECT_NAME}_object PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_library(${CMAKE_PROJECT_NAME}_object OBJECT 
@@ -31,5 +34,6 @@ add_executable (${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_obj
 # C++17 flags
 set_property(TARGET ${CMAKE_PROJECT_NAME}_object ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set_property(TARGET ${CMAKE_PROJECT_NAME}_object ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+
 
 # TODO: Add tests and install targets if needed.

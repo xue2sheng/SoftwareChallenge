@@ -3,6 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.10)
 
+# pthread doesn't make Windows happy
+SET(CMAKE_CXX_FLAGS -pthread)
+
 include_directories(test00 PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_executable(test00 $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "test00.cpp")
 
@@ -18,6 +21,7 @@ add_executable(test03 $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "test03.cpp
 # C++17 required by Catch2 library
 set_property(TARGET test00 test01 test02 test03 PROPERTY CXX_STANDARD 17)
 set_property(TARGET test00 test01 test02 test03 PROPERTY CXX_STANDARD_REQUIRED ON)
+
 
 # TODO: Add tests and install targets if needed.
 add_test(NAME test00 COMMAND test00)

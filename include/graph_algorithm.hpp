@@ -39,7 +39,7 @@ namespace SoftwareChallenge {
 /**
 * @brief keep the visited member log in a way that several threads can cooperate
 */
-typedef std::vector<std::atomic<IndexType>> Visited;
+typedef std::vector<std::atomic<bool>> Visited;
 
 /**
 * @class TiesBFS

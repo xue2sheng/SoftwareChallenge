@@ -10,8 +10,15 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <queue>
+#include <thread>
+
 #include "graph_algorithm.hpp"
 #include "preprocess.hpp"
+
+
+/******/
+#include <iostream>
 
 using namespace SoftwareChallenge;
 
@@ -41,10 +48,15 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
 
     // avoid cycles in those searchs
     Visited visited(length);
+    for(auto&& i : visited) { i.store(false); } // just in case its default value it's not false
 
     // Being friendships bidirectional, we'd better launch two concurrent search from each side and meet in the middle
     TiesBFS tiesA {friendGraph, visited, indexA};
     TiesBFS tiesB {friendGraph, visited, indexB};
+
+    // launch one search
+    std::thread searchA(std::ref(tiesA));
+    searchA.join();
 
     return { false, searchId + " Not implemented search yet", 0 };
 }
@@ -54,5 +66,30 @@ TiesBFS::TiesBFS(const FriendGraph& friendGraph, Visited& visitedMembers, const 
 
 void TiesBFS::operator()()
 {
+     // Typical queue for BFS algorithms
+     std::queue<IndexType> queue;
 
+     // Get ready for the initial one
+     visited[start].store(true);
+     queue.push(start);
+
+     // take a walk
+     std::cout << "Walk" << std::endl;
+     while( ! queue.empty() ) {
+
+         // get the next one
+         auto next { queue.front() };
+         std::cout << next << " ";
+         queue.pop();
+
+         // go through all her/his friends
+         for(const auto& i : graph[next]) {
+             if( ! visited[i].load() ) {
+                 visited[i].store(true);
+                 std::cout << i << std::endl;
+                 queue.push(i);
+             }
+         }
+     } // while
+     std::cout << std::endl;
 }
