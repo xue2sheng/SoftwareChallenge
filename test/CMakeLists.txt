@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.10)
 # pthread doesn't make Windows happy
 
 # pthreads doesn't make Windows happy
-if(UNIX AND APPLE)
+if(UNIX OR APPLE)
 	set(CMAKE_CXX_FLAGS -pthread)
 endif()
 

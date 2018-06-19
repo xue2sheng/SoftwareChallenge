@@ -14,7 +14,7 @@ set(data_path_cpp ${CMAKE_CURRENT_BINARY_DIR}/data_path.cpp)
 configure_file(${data_path_in} ${data_path_cpp} @ONLY)
 
 # pthreads doesn't make Windows happy
-if(UNIX AND APPLE)
+if(UNIX OR APPLE)
 	set(CMAKE_CXX_FLAGS -pthread)
 endif()
 
