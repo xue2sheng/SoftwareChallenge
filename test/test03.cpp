@@ -89,8 +89,8 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
 
             THEN("Must have the correct distance") {
 
-                REQUIRE( success == false );
-                //REQUIRE( ties == 1 );
+                REQUIRE( success == true );
+                REQUIRE( ties == 2 );
             }
     }
   }

@@ -92,8 +92,10 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
 
             THEN("Must have the correct distance") {
 
+
+                REQUIRE( hint == "" );
                 REQUIRE( success == false );
-                //REQUIRE( ties == 1 );
+                REQUIRE( ties == INDEX_MAX );
             }
     }
 
@@ -112,14 +114,15 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
             }
     }
 
-    WHEN("Launch a typcial search") {
+    WHEN("Launch a typcial search for desconnected members") {
 
             auto[ success, hint, ties ] = searchFriends("A","C", name2index, friendGraph);
 
             THEN("Must have the correct distance") {
 
+                REQUIRE( hint == "" );
                 REQUIRE( success == false );
-                //REQUIRE( ties == 1 );
+                REQUIRE( ties == INDEX_MAX );
             }
     }
   }

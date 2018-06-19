@@ -13,20 +13,10 @@
 #include <queue>
 #include <thread>
 #include <utility>
-#include <mutex>
 #include <sstream>
 
 #include "graph_algorithm.hpp"
 #include "preprocess.hpp"
-
-std::mutex guard_mutex;
-
-/**** slow thread debug ****/
-#include <iostream>
-void trace(const std::string& threadId, const std::string& message) {
-    std::lock_guard<std::mutex> lock(guard_mutex);
-    std::cout << threadId << ": " << message << std::endl;
-}
 
 using namespace SoftwareChallenge;
 
@@ -64,6 +54,12 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
         return { true, searchId + " They are direct friends", 0 };
     }
 
+    // flag done
+    std::atomic<bool> doneA;
+    doneA.store(false);
+    std::atomic<bool> doneB;
+    doneB.store(false);
+
     // avoid cycles in those searchs
     Visited visitedA(length);
     for(auto&& i : visitedA) { i.store(0); } // just in case its default value it's not zero
@@ -71,8 +67,8 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     for(auto&& i : visitedB) { i.store(0); } // just in case its default value it's not zero
 
     // Being friendships bidirectional, we'd better launch two concurrent search from each side and meet in the middle
-    TiesBFS tiesA {indexB, friendGraph, visitedA, visitedB, indexA, "A"};
-    TiesBFS tiesB {indexA, friendGraph, visitedB, visitedA, indexB, "B"};
+    TiesBFS tiesA {doneA, doneB, indexB, friendGraph, visitedA, visitedB, indexA, "A"};
+    TiesBFS tiesB {doneB, doneA, indexA, friendGraph, visitedB, visitedA, indexB, "B"};
 
     // launch one search
     std::thread searchA(std::ref(tiesA));
@@ -105,13 +101,24 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
             }
         }
 
+        if( (visitedA[indexB] == 0) && (visitedB[indexA] != 0) ) {
+            return { true, ss.str(), visitedB[indexA] };
+        }
+
+        if( (visitedA[indexB] != 0) && (visitedB[indexA] == 0) ) {
+            return { true, ss.str(), visitedA[indexB] };
+        }
+
         return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };
     }
 }
 
-TiesBFS::TiesBFS(const IndexType targetPoint, const FriendGraph& friendGraph, Visited& mine, Visited& others,
+TiesBFS::TiesBFS(std::atomic<bool>& myDone_, std::atomic<bool>& othersDone_,
+                 const IndexType targetPoint, const FriendGraph& friendGraph,
+                 Visited& mine, Visited& others,
                  const IndexType startPoint, const std::string& threadId_)
-    : target{targetPoint},  graph{friendGraph},
+    : myDone{myDone_}, othersDone{othersDone_},
+      target{targetPoint},  graph{friendGraph},
       myVisited{mine}, othersVisited{others},
       start{startPoint}, threadId{threadId_}
 {
@@ -136,7 +143,7 @@ void TiesBFS::operator()()
      queue.emplace(start, step);
 
      // take a walk
-     while( ! queue.empty() ) {
+     while( ! queue.empty() && ! myDone.load() ) {
 
          // get the next one
          auto next { queue.front() };
@@ -144,26 +151,43 @@ void TiesBFS::operator()()
 
          // common friend or reach the oher side???
          if( othersVisited[next.first].load() ) {
-            //trace(threadId, "reached other or just some common " + std::to_string(next.first) + " queued as " + std::to_string(next.second));
 
             // needed that initial distance be INDEX_MAX
             // supposed that A and B cannot be the same
             if( (distance == 0) || (next.second < distance) ) { common = next.first; distance = next.second; }
          }
 
-         //trace(threadId, "pop " + std::to_string(next.first) + "[" + std::to_string(step) + "]");
-         step++;
+         // check it out if target was reached
+         if( next.first == target ) {
 
-         // go through all her/his friends
-         for(const auto& i : graph[next.first]) {
+             // done with this thread
+             myDone.store(true);
 
-             // keep on searching
-             if( ! myVisited[i].load() ) {
-                 myVisited[i].store(step);
-                 //trace(threadId, ">>> " + std::to_string(i) + "<" + std::to_string(step) + ">");
-                 queue.emplace(i, step);
-             }
+             // warn the other thread about the distance
+             othersVisited[start] = next.second;
+
+             // done!
+             break;
          }
 
+         // if the other thread has finished, just not add more items to the queue and clean it up as soon as possible
+         if( ! othersDone.load() ) {
+
+             // go through all her/his friends
+             step++;
+             for(const auto& i : graph[next.first]) {
+
+                 // keep on searching
+                 if( ! myVisited[i].load() ) {
+                    myVisited[i].store(step);
+                    queue.emplace(i, step);
+                 }
+             }
+
+         } // othersDone
+
      } // while
+
+     // done
+     myDone.store(true);
 }

@@ -48,6 +48,16 @@ typedef std::vector<std::atomic<IndexType>> Visited;
 class TiesBFS {
 
   /**
+   * @brief flag to exit the thread
+   */
+  std::atomic<bool>& myDone;
+
+  /**
+   * @brief flag to exit of the other thread
+   */
+  std::atomic<bool>& othersDone;
+
+  /**
    * @brief target to search for
    */
   const IndexType target {0}; // invalid value
@@ -91,13 +101,15 @@ public:
 
   /**
    * @brief Bind external information through its constructor
+   * @param done flag to stop this thread.
+   * @param otherDone flag to stop other thread.
    * @param targetMember to look for.
    * @param friendGRraph social network info.
    * @param visitedMembers keeps a log of already processes friends
    * @param startPoint to kick off the search
    * @param threadId for debugging
    */
-  explicit TiesBFS(const IndexType targetMember, const FriendGraph& friendGraph, Visited& mine, Visited& others, const IndexType startPoint, const std::string& threadId);
+  explicit TiesBFS(std::atomic<bool>& done, std::atomic<bool>& otherDone, const IndexType targetMember, const FriendGraph& friendGraph, Visited& mine, Visited& others, const IndexType startPoint, const std::string& threadId);
 
   /**
    * @brief distance walked by this thread
