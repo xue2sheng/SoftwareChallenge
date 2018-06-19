@@ -93,12 +93,16 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
 
         std::string commonA;
         if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
-        ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
+            if( (tiesA.getDistance() != INDEX_MAX) || (tiesA.getCommon() != indexB) ) {
+                ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
+            }
         }
 
         std::string commonB;
         if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
-        ss << " commonB=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
+            if( (tiesB.getDistance() != INDEX_MAX) || (tiesB.getCommon() != indexB) ) {
+                ss <<  " commonA=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
+            }
         }
 
         return { true, ss.str(), std::min(visitedA[indexB],visitedB[indexA]) };

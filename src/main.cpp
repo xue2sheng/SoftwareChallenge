@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
         auto [success, hint, ties] = searchFriends( i.first, i.second, name2index, friendGraph );
         if( !success ) {
-            std::cerr << "ERROR: " << hint.c_str() << std::endl;
+            std::cerr << hint.c_str() << std::endl;
             ++result; // means no success in the end
             continue; // process all searches
         }
