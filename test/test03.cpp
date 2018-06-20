@@ -94,17 +94,5 @@ SCENARIO("Process computer-friendly inputs", "[binary]") {
             }
     }
 
-    WHEN("Launch a typcial search of dixconnected") {
-
-            auto[ success, hint, ties ] = searchFriends("A","D", name2index, friendGraph);
-
-            THEN("Must have the correct distance") {
-
-                REQUIRE( success == false );
-                REQUIRE( ties == INDEX_MAX );
-            }
-    }
-
-
   }
 }

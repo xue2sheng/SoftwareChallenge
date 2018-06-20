@@ -18,6 +18,8 @@
 #include "graph_algorithm.hpp"
 #include "preprocess.hpp"
 
+#include <iostream>
+
 using namespace SoftwareChallenge;
 
 std::tuple<bool, std::string, IndexType, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> load(const std::string& filename)
@@ -76,54 +78,39 @@ std::tuple<bool, std::string, IndexType> searchFriends(const std::string& A, con
     searchA.join();
     searchB.join();
 
-    // distance
-    IndexType ties {0};
-
     // extra details to report
     std::stringstream ss;
+    ss << searchId << "   ";
 
-    // One thread likely was stop before reaching its target so get the info from the one which hit its target
-    if( (visitedA[indexB] == INDEX_MAX) && (visitedB[indexA] == INDEX_MAX) ) {
-       ties = (tiesA.getDistance() + tiesB.getDistance());
-    } else {
-       ties = std::min(visitedA[indexB],visitedB[indexA]);
-    }
-    ss << searchId << "   " << ties << " should suffice  ";
+    // result
+    IndexType ties { std::min(tiesA.getDistance(), tiesB.getDistance()) };
 
-    // avoid to report ugly number
-    if( visitedA[indexB] != INDEX_MAX ) {
-        ss << "    threadA=" << visitedA[indexB];
-    }
+    // any common link
+    if( ties != INDEX_MAX ) {
 
-    // avoid to report ugly number
-    if( visitedB[indexA] != INDEX_MAX ) {
-        ss << "    threadB=" << visitedB[indexA];
-    }
+        // result
+        ss << ties << " should suffice  ";
 
-    // avoid to report ugly number
-    std::string commonA;
-    if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
+        // avoid to report ugly numberfor this debugging info
+        if( auto[success, name] = name2index.getName( tiesA.getCommon() ); success ) {
         if( (tiesA.getDistance() != INDEX_MAX) || (tiesA.getCommon() != indexB) ) {
              ss <<  " commonA=" << name << "[" << tiesA.getCommon() << "]<" << tiesA.getDistance() << ">";
+            }
         }
-    }
 
-    // avoid to report ugly number
-    std::string commonB;
-    if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
+        // avoid to report ugly numberfor this debugging info
+        if( auto[success, name] = name2index.getName( tiesB.getCommon() ); success ) {
          if( (tiesB.getDistance() != INDEX_MAX) || (tiesB.getCommon() != indexB) ) {
              ss <<  " commonB=" << name << "[" << tiesB.getCommon() << "]<" << tiesB.getDistance() << ">";
          }
+        }
+
+        // success
+        return { true, ss.str(), ties };
     }
 
-    // Neitehr of two threads hit direclty its targets
-    if( (tiesB.getDistance() == INDEX_MAX) && (tiesA.getDistance() == INDEX_MAX) ) {
-
-        return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
-    }
-
-    // Common case
-    return { true, ss.str(), ties };
+    // without link
+    return { false, searchId + " It seems they don't have a link of friends between them", INDEX_MAX };
 }
 
 TiesBFS::TiesBFS(std::atomic<bool>& myDone_, std::atomic<bool>& othersDone_,
@@ -136,7 +123,7 @@ TiesBFS::TiesBFS(std::atomic<bool>& myDone_, std::atomic<bool>& othersDone_,
       start{startPoint}, threadId{threadId_}
 {
     // worst scenario
-    common = target;
+    common = INDEX_MAX;
     distance = INDEX_MAX;
 }
 
@@ -158,36 +145,29 @@ void TiesBFS::operator()()
      // take a walk
      while( ! queue.empty() && ! myDone.load() ) {
 
+         // double check history of visited nodes looking for shared ones between both threads
+         for(IndexType i = 0; i < myVisited.size(); ++i) {
+
+             if( myVisited[i].load() && othersVisited[i].load() && i != start && i != target ) {
+
+                    myDone.store(true);
+                    othersDone.store(true);
+                    common = i;
+                    distance = myVisited[i].load() + othersVisited[i].load();
+             }
+         }
+
          // get the next one
          auto next { queue.front() };
          queue.pop();
 
-         // common friend or reach the oher side???
-         if( othersVisited[next.first].load() ) {
-
-            // needed that initial distance be INDEX_MAX
-            // supposed that A and B cannot be the same
-            if( (distance == 0) || (next.second < distance) ) { common = next.first; distance = next.second; }
-         }
-
-         // check it out if target was reached
-         if( next.first == target ) {
-
-             // done with this thread
-             myDone.store(true);
-
-             // warn the other thread in a way that let us debug later what thread hit the target first
-             othersVisited[start] = INDEX_MAX;
-
-             // done!
-             break;
-         }
-
          // if the other thread has finished, just not add more items to the queue and clean it up as soon as possible
          if( ! othersDone.load() ) {
 
-             // go through all her/his friends
+             // next level
              step++;
+
+             // go through all her/his friends
              for(const auto& i : graph[next.first]) {
 
                  // keep on searching
