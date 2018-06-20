@@ -90,3 +90,11 @@ Once everything is properly rebuilt, you can launch your test from usual menu **
 
 ![QtCreator Tests](images/QtCreator_Tests.png)
 
+# Pending tasks
+
+Testing very low level pointer operations to load binary files directly into memory or debugging all the corner cases in multthreaded applications are prone to errors.
+So take with a pinch of salt that part of the code because it's incomplete.
+
+We'd better to execute that executable **in production** only with text file inputs (files ending in *.txt*) and focus preferably only in the provided **SocialNetwork.txt**.
+That file has been checked it out more seriously with unit and manual tests.
+Take advantage from the fact that **a list of pair elements** can be provided in order not to have to load the graph in memory every single time.

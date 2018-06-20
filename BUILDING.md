@@ -137,5 +137,17 @@ Besides the ones included in the common IDE's, i.e. Visual Studio with Microsoft
 	==5682== For counts of detected and suppressed errors, rerun with: -v
 	==5682== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 
-Due to the fact that *valgrind* instrumentation slowes down that default execution, it's clear that getting the graph ready takes a good chunk of the total time execution. It'd be great to load directly some preprocessed computer-friendly input instead.
+# Pending tasks
+
+Due to the fact that *valgrind* instrumentation slows down that default execution, it's clear that getting the graph ready takes a good chunk of the total time execution. It'd be great to load directly some preprocessed computer-friendly input instead.
+
+That the reason why one attempt to code **binary** input files was tried but not completely unit testes.
+So take it that part as a pending **proof of concept** but don't execute. It seems that the size of the binary version
+can be almost the half because *strings* are avoided as much as possible.
+
+As well the minimum possible size was chosen but it can lead to issues when it comes down to load binary information from the hard disk. Ditching that usual type **size_t**, expected by common low level operations was a handicap. 
+But at least it showed that with some extra time to iron out all the currently pending problems on that subject, not only hard disk space can be spared but also loading time. 
+
+**Preprocess** the input as a different task from the very same **search for the target** can be considered as a first step in order to split this monolithic app into several more **microservices**.
+In the code, it can be found to different *functions*: **preprocess** and **searchFriends**. See [The Twelve=factor App](https://12factor.net/)
 
