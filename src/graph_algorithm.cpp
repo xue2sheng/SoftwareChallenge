@@ -14,11 +14,12 @@
 #include <thread>
 #include <utility>
 #include <sstream>
+#include <mutex>
 
 #include "graph_algorithm.hpp"
 #include "preprocess.hpp"
 
-#include <iostream>
+std::mutex MUTEX;
 
 using namespace SoftwareChallenge;
 
@@ -150,16 +151,33 @@ void TiesBFS::operator()()
 
              if( myVisited[i].load() && othersVisited[i].load() && i != start && i != target ) {
 
-                    myDone.store(true);
-                    othersDone.store(true);
-                    common = i;
-                    distance = myVisited[i].load() + othersVisited[i].load();
+                // be extra carefull
+                std::lock_guard<std::mutex> lock(MUTEX);
+
+                myDone.store(true);
+                othersDone.store(true);
+                common = i;
+                distance = myVisited[i].load() + othersVisited[i].load();
+                break;
              }
          }
 
          // get the next one
          auto next { queue.front() };
          queue.pop();
+
+         // reached target?
+         if( next.first == target ) {
+
+                 // be extra carefull
+                std::lock_guard<std::mutex> lock(MUTEX);
+
+                myDone.store(true);
+                othersDone.store(true);
+                common = target;
+                distance = myVisited[target].load();
+                break;
+         }
 
          // if the other thread has finished, just not add more items to the queue and clean it up as soon as possible
          if( ! othersDone.load() ) {
