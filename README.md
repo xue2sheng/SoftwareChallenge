@@ -105,6 +105,7 @@ That generates the following output:
 
 Knowing that it's only **five** ties to walk through, the previous process can be repeated untill the following graph is obtained:
 
+![graph](images/graph.png)
 
 ## Working environment
 

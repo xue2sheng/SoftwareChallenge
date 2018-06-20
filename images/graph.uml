@@ -1,0 +1,19 @@
+@startuml
+
+:STACEY_STRIMPLE: as SS
+:KORY_NICKOLAS: as KN 
+:LUCIANO_KEBA: as LK
+:MANUEL_BABINEAU: as MB
+:RIGOBERTO_RACCA: as RR
+:FRITZ_RYBCZYK: as FR
+:RICH_OMLI: as RO
+
+SS --|> KN
+KN --|> LK
+KN --|> MB
+LK --|> RR
+MB --|> RR
+RR --|> FR
+FR --|> RO
+
+@enduml
