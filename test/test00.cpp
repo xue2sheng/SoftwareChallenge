@@ -13,6 +13,7 @@
 
 using namespace SoftwareChallenge;
 
+/** @brief Kepp an eye on data structures **/
 SCENARIO("Check how to compact/load data structures", "[structure]") {
 
     GIVEN("Name & Index maping") {

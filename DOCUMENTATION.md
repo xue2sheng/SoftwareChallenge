@@ -32,6 +32,13 @@ Provided you got your latest needed tools, as CMake or Doxygen/Graphviz, on your
 	cmake .. -DEXTRA:STRING=yes
 	doxygen doc/Doxyfile
 
+In case that a regeneration of that documentation is required, i.e. external task as **webhooks**, invoke its *specific target* and keep an eye on its references:
+
+	cmake --build . --target regenerate_doc
+
+Once you are at that *build* folder, specially if you're debugging documentation, just invoke directly **doxygen**:
+
+
 The documentation should be generated inside of **html** folder at that *build* directory:
 
 	firefox .\html\index.html
@@ -45,13 +52,17 @@ Provided you got update your macOS box with latest apple clang c++ compiler (>= 
 	cmake .. -DEXTRA=yes
 	doxygen doc/Doxyfile
 
+In case that a regeneration of that documentation is required invoke its *specific target* and keep an eye on its references:
+
+	cmake --build . --target regenerate_doc
+
 The documentation should be generated inside of **html** folder at that *build* directory:
 
 	opan -a Safari .\html\index.html
 
 # Documentation version
 
-As stated at [BULDING](BULDING.md), that syncronized version number is maintained at the main [CMakeLisis.txt file](CMakeLists.txt) and purging CMake caches is needed to properly update it.
+As stated at [BUILDING](BUILDING.md), that syncronized version number is maintained at the main [CMakeLisis.txt file](CMakeLists.txt) and purging CMake caches is needed to properly update it.
 
 ![Doxygen](images/Doxygen.png)
 
@@ -83,3 +94,46 @@ On macOS, almost the very same than Linux:
 	java -jar /opt/plantuml/plantuml.jar -progress ./diagram.uml
 	open -a Safari ./diagram.png
 
+# Presentation
+
+The HTML Presentation Framework [REVEAL.JS](https://revealjs.com) was chosen due to its easy update and deployment on a typical server as **nginx**.
+
+That deployment just followed standard [reveal.js installation instructions](https://github.com/hakimel/reveal.js#installation) with the expected extra steps to publish that presentation at the [public server](https://xue2sheng.com/presentations/index.html):
+
+1) Download or clone [reveal.js](https://github.com/hakimel/reveal.js.git) project in your working directory, i.e. **/home/user/Code**, on your server, i.e. one Debian box.
+
+2) Get ready your server configuration, i.e. **/etc/nginx/sites-available/default**, provided that *default* configuration is enabled at **/etc/nginx/sites-enable**. Don't forget to update those changes, i.e. *sudo nginx -t* and *sudo nginx -s reload*:
+
+         location /reveal.js/ {
+            alias /var/www/reveal.js/;
+         }
+         location /doxygen/ {
+            alias /var/www/doxygen/;
+            autoindex on;
+         }
+         location /presentations/ {
+            alias /var/www/presentation/;
+            autoindex on;
+         }
+
+3) Create previous configured folders:
+
+		sudo ln -s /home/user/Code/reveal.js /var/www
+		sudo ln -s /home/user/Code/SoftwareChallenge/build/html /var/www/doxygen
+		sudo mkdir -p /var/www/presentation
+
+4) A *louncher index.html* if required in order to internally point to our project **Markdown** information as hinted at [reveal external markdown help](https://github.com/hakimel/reveal.js#external-markdown). The easiest approach is to use [the one provided by this project](doc/index.html) by just soft-linking it:
+
+		sudo ln -s /home/user/Code/SoftwareChallange/doc/index.html /var/www/presentation
+
+5) Link your project information to that HTML server. That way your presentation file can be treated and updated as another typical code file:
+
+		sudo ln -s /home/user/Code/SoftwareChallange/PRESENTATION.md /var/www/presentation
+		sudo ln -s /home/user/Code/SoftwareChallange/images /var/www/presentation
+	
+
+	
+
+
+
+ 

@@ -1,4 +1,4 @@
-# Buiding
+# Building
 
 Although [**CMake**](CMakeLists.txt) makes it easy to build your code on different platforms, there are always little details to take into account. 
 
@@ -151,3 +151,30 @@ But at least it showed that with some extra time to iron out all the currently p
 **Preprocess** the input as a different task from the very same **search for the target** can be considered as a first step in order to split this monolithic app into several more **microservices**.
 In the code, it can be found to different *functions*: **preprocess** and **searchFriends**. See [The Twelve=factor App](https://12factor.net/)
 
+# Webhooks
+
+It's common to configure some webhooks in your repository in order to automatically force to update, build or launch tests on some remote server. As an [example](extra/webhooks_recwiver/main.go), a simple receiver based on [webhooks](https://github.com/go-playground/webhooks) library by **Go Playgound** was included at **extra/webhooks_receiver** folder, with some basic [**systemd** configuration file](extra/webhooks_receiver/webhooks_receiver.service).
+
+For example, that *example* of **webhook_receiver** is waiting for **version** to be updated at **CMakeLists** file:
+
+		for _, item := range push.HeadCommit.Modified {
+			if (*trigger == item) {
+				RegenerateDoc(*source,*build)
+				break;
+			}
+		} //for
+
+That *RegenerateDoc* function just invokes those expected manual steps:
+
+		.......
+		// git -C <<source_dir>> pull
+		cmd := exec.Command("git", "-C", source_dir, "pull")
+		.......
+		// cmake -H<<source dir>> -B<<build_dir>>
+		cmd = exec.Command("cmake","-H"+*source,"-B"+*build,"-DEXTRA:STRING=yes")
+		.......
+		// cmake --build <<build_dir>> --target regenerate_doc 
+		cmd = exec.Command("cmake","--build",*build,"--target","regenerate_doc")
+		.......
+
+Don't forget to configure your repository, i.e. GitHub,  your remote server firewall, i.e. DigitalOcean, your HTML server, i.e. nginx, and your server, i.e. *systemd* commands to work all together. Specially if you're interested in only allowing *https* protocol.

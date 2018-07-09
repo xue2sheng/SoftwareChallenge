@@ -19,7 +19,7 @@
 
 /**
 * @brief load binary info 
-* @param file_name to load 
+* @param filename to load 
 * @return true if success with extra hints. As well data structures
 */
 std::tuple<bool, std::string, SoftwareChallenge::IndexType, SoftwareChallenge::NameIndex, SoftwareChallenge::FriendGraph> load(const std::string& filename);
@@ -33,6 +33,16 @@ std::tuple<bool, std::string, SoftwareChallenge::IndexType, SoftwareChallenge::N
 * @return true if exists one and its number of ties, otherwise false. As well some hint about the result.
 */
 std::tuple<bool, std::string, SoftwareChallenge::IndexType> searchFriends(const std::string& A, const std::string& B, const SoftwareChallenge::NameIndex& name2index, const SoftwareChallenge::FriendGraph& friendGraph);
+
+/**
+* @brief distance or number of ties, if any, between two indexes of that social network
+* @param A one member
+* @param B another one
+* @param name2index mapping.
+* @param friendGraph information.
+* @return true if exists one and its number of ties, otherwise false. As well some hint about the result.
+*/
+std::tuple<bool, std::string, SoftwareChallenge::IndexType> searchIndexes(const SoftwareChallenge::IndexType& A, const SoftwareChallenge::IndexType& B, const SoftwareChallenge::NameIndex& name2index, const SoftwareChallenge::FriendGraph& friendGraph);
 
 namespace SoftwareChallenge {
 
@@ -104,8 +114,9 @@ public:
    * @param done flag to stop this thread.
    * @param otherDone flag to stop other thread.
    * @param targetMember to look for.
-   * @param friendGRraph social network info.
-   * @param visitedMembers keeps a log of already processes friends
+   * @param friendGraph social network info.
+   * @param mine keeps a log of already processes friends
+   * @param others keeps a log of already processes friends
    * @param startPoint to kick off the search
    * @param threadId for debugging
    */
@@ -123,7 +134,6 @@ public:
 
   /**
    * @brief Typical Breadth First Search or BFS for a Graph in order to figure out the number of ties between two members if any.
-   * @param start with a member that search.
   */
   void operator()();
 };

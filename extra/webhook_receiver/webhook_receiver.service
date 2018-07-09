@@ -1,0 +1,17 @@
+[Unit]
+Description=Webhooks receiver to update locally cloned projects.
+After=syslog.target
+After=network.target
+After=nginx.service
+
+[Service]
+Type=simple
+User=user
+Group=user
+WorkingDirectory=/tmp
+ExecStart=/home/user/Code/SoftwareChallenge/extra/webhook_receiver/webhook_receiver -trigger CMakeLists.txt -secret XXX -build /home/user/Code/SoftwareChallenge/build -source /home/user/Code/SoftwareChallenge
+Restart=always
+Environment=USER=user HOME=/home/user PATH=/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target

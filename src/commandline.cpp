@@ -21,6 +21,7 @@
 */
 typedef std::vector<std::pair<std::string, std::string>> CoupleList;
 
+/** @brief Helper for options **/
 char* getCmdOption(char ** begin, char ** end, const std::string & option)
 {
 	char ** itr = std::find(begin, end, option);
@@ -64,7 +65,7 @@ std::tuple< std::string, bool, std::string, bool, bool, CoupleList> commandline_
         std::cout << " -g --generate: Generate computer-friendly compact file name." << std::endl;
         std::cout << "                Required that input file name extension is .txt" << std::endl << std::endl;
         std::cout << "                This generation option prevents the graph search for number of ties." << std::endl;
-        std::cout << " -l <list of name pairs>: list of couples of members to process separated by commas." << std::endl;
+        std::cout << " -l <list of name pairs>: list of couples of members or couples of indexes to process separated by commas." << std::endl;
         std::cout << "                          There must be even and -g option shouldn't be active." << std::endl;
         std::cout << std::endl;
 

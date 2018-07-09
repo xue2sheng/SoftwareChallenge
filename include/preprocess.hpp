@@ -90,21 +90,20 @@ public:
 
 	/**
 	* @brief Given an input file, feed our list of members 
-	* @param file_nane human-friendly input file name
+	* @param file_name human-friendly input file name
 	* @return false if error and its description, otherwise true and a summary report
 	*/
 	std::tuple<bool, std::string> process(const std::string& file_name);
 
 	/**
 	* @brief Given a collection, try to compact its information in a computer-friendly way 
-	* @param file_nane human-friendly input file name
 	* @return false if error and its description, otherwise true and a summary report. As well, the number of members in that social network and extra useful structures.
 	*/
     std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> compact();
 
     /**
     * @brief Save to a file the compact version
-    * @param file_nane computer-friendly file name
+    * @param file_name computer-friendly file name
     * @return false if error and its description, otherwise true and a summary report
     *
     * Save all those bytes of NameIndex and FriendGraph structures in a row.
@@ -113,7 +112,7 @@ public:
 
     /**
     * @brief Load from a file the compact version
-    * @param file_nane computer-friendly file name
+    * @param file_name computer-friendly file name
     * @return false if error and its description, otherwise true and a summary report. As well number of members
     *
     * Split all those bytes between NameIndex and FriendGraph structures in a row.

@@ -23,7 +23,10 @@ include_directories(${CMAKE_PROJECT_NAME}_object PRIVATE ${CMAKE_SOURCE_DIR}/inc
 add_library(${CMAKE_PROJECT_NAME}_object OBJECT 
 	"commandline.cpp" 
 	"preprocess.cpp" 
-	"data_structure.cpp" 
+	"data_structure_basic.cpp" 
+	"data_structure_member.cpp" 
+	"data_structure_name2index.cpp" 
+	"data_structure_graph.cpp" 
 	"graph_algorithm.cpp"
 	"version.cpp" 
 	"data_path.cpp"

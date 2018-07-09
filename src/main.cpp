@@ -19,6 +19,7 @@
 #include "preprocess.hpp"
 #include "graph_algorithm.hpp"
 
+/** @brief console launcher **/
 int main(int argc, char** argv)
 {
 	// preprocess human-friendly input into something more compact
@@ -37,17 +38,17 @@ int main(int argc, char** argv)
     // success --> 0
     int result {0};
 
-    // search for ties
     for(const auto& i : coupleList) {
 
         auto [success, hint, ties] = searchFriends( i.first, i.second, name2index, friendGraph );
         if( !success ) {
-            std::cerr << hint.c_str() << std::endl;
-            ++result; // means no success in the end
-            continue; // process all searches
-        }
-        std::cout << hint.c_str() << std::endl;
-    }
+             std::cerr << hint.c_str() << std::endl;
+             ++result; // means no success in the end
+             continue; // process all searches
+         }
+         std::cout << hint.c_str() << std::endl;
+
+    } // for
 
     // exit with proper code ==> good for possible external scripts by our DevOps fellas
     return result;

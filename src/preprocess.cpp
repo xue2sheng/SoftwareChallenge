@@ -101,10 +101,17 @@ void Collection::add(const std::string& key, const std::string& new_friend)
 	friend_info->second.add(key_info->second.index);
 }
 
-// RAII wrapper to open/close file
+/**
+ * @brief RAII wrapper to open/close file
+ */
 struct RAII {
+	/** @brief file to work with */
 	std::ifstream file;
+	/** @brief Constructor for the wrapper
+	 * @param file_name Path to the file
+	 */
 	RAII(const std::string& file_name) : file(file_name) {}
+	/** @brief Desctructor */
 	~RAII() { if (file.is_open()) { file.close(); } }
 };
 
@@ -231,10 +238,17 @@ std::tuple<bool, std::string, size_t, NameIndex, FriendGraph> Collection::compac
 	};
 }
 
-// RAII wrapper to open/close file
+/**
+ * @brief RAII wrapper to open/close file
+ */
 struct RAII_binary {
+    /** @brief file to work with */
     std::ofstream file;
+    /** @brief Constructor for the wrapper
+     * @param file_name Path to the file
+     */
     RAII_binary(const std::string& file_name) : file(file_name, std::fstream::binary) {}
+    /** @brief Desctructor */
     ~RAII_binary() { if (file.is_open()) { file.close(); } }
 };
 
@@ -300,13 +314,20 @@ std::tuple<bool, std::string, IndexType, size_t, size_t> Collection::store(const
     return { true, "Stored compact format at " + file_name, length, name2index_length, friendGraph_length };
 }
 
-// RAII wrapper to open/close file
+/**
+ * @brief RAII wrapper to open/close file
+ */
 struct RAII_input_binary {
+    /** @brief file to work with */
     std::ifstream file;
+    /** @brief Constructor for the wrapper
+     * @param file_name Path to the file
+     */
     RAII_input_binary(const std::string& file_name) : file(file_name, std::fstream::binary) {}
+    /** @brief Desctructor */
     ~RAII_input_binary() { if (file.is_open()) { file.close(); } }
 };
-
+ 
 std::tuple<bool, std::string, IndexType, size_t, size_t> Collection::load(const std::string& file_name)
 {
     // number of members

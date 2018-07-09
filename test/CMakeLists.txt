@@ -10,7 +10,7 @@ if(UNIX OR APPLE)
 	set(CMAKE_CXX_FLAGS -pthread)
 endif()
 
-foreach(TEST_NAME test00 test01 test02 test03 test04 test05)
+foreach(TEST_NAME test00 test01 test02 test03 test04 test05 test06)
 
 	include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 	add_executable(${TEST_NAME} $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}_object> "${TEST_NAME}.cpp")
