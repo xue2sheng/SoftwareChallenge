@@ -22,14 +22,22 @@ typedef uint32_t IndexType; // sizeof(size_t) == 2*sizeof(IndexType)
 
 /** @brief to serialize into uint8_t */
 union UIndexType {
+    /** @brief raw information as an unique integer **/
     IndexType raw;
+    /** @brief split information as several bytes **/
     struct {
         uint8_t a;
         uint8_t b;
         uint8_t c;
         uint8_t d;
     } split;
+    /** @brief split information into bytes
+     * @param output result
+     **/
     void compact(uint8_t* output) const;
+    /** @brief load information from bytes
+     * @param input bytes
+     **/
     void load(const uint8_t* input);
 };
 
